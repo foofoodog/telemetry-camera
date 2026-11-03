@@ -592,12 +592,19 @@ fun GalleryViewerScreen(
                                         if (validKmzItems.isNotEmpty()) {
                                             val savedUri = GisExportHelper.exportKmz(context, validKmzItems)
                                             if (savedUri != null) {
+                                                val viewIntent = Intent(Intent.ACTION_VIEW).apply {
+                                                    setDataAndType(savedUri, "application/vnd.google-earth.kmz")
+                                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                                }
                                                 val shareIntent = Intent(Intent.ACTION_SEND).apply {
                                                     type = "application/vnd.google-earth.kmz"
                                                     putExtra(Intent.EXTRA_STREAM, savedUri)
                                                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                                 }
-                                                context.startActivity(Intent.createChooser(shareIntent, "Open or Share Google Earth KMZ"))
+                                                val chooser = Intent.createChooser(viewIntent, "Open or Share Google Earth KMZ").apply {
+                                                    putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(shareIntent))
+                                                }
+                                                context.startActivity(chooser)
                                             } else {
                                                 Toast.makeText(context, "Failed to create KMZ bundle", Toast.LENGTH_SHORT).show()
                                             }
