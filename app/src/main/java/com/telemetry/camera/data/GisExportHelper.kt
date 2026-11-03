@@ -2,12 +2,18 @@ package com.telemetry.camera.data
 
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Base64
+import androidx.exifinterface.media.ExifInterface
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -101,9 +107,19 @@ object GisExportHelper {
                     val safeFileName = "img_${index + 1}_${cleanName}"
                     fileEntries.add(Pair(safeFileName, item.photoUri))
 
+                    val base64Thumbnail = createOptimizedBase64(context, item.photoUri, maxDimension = 960, quality = 75)
+
                     sb.append("    <Placemark>\n")
                     sb.append("      <name>${escapeXml(item.displayName)}</name>\n")
                     sb.append("      <styleUrl>#cameraPlacemark</styleUrl>\n")
+
+                    if (base64Thumbnail != null) {
+                        sb.append("      <gx:Carousel>\n")
+                        sb.append("        <gx:Image>\n")
+                        sb.append("          <gx:imageUrl>data:image/jpeg;base64,$base64Thumbnail</gx:imageUrl>\n")
+                        sb.append("        </gx:Image>\n")
+                        sb.append("      </gx:Carousel>\n")
+                    }
 
                     // 3D Virtual Camera Pose
                     sb.append("      <Camera>\n")
@@ -117,10 +133,15 @@ object GisExportHelper {
                     sb.append("      </Camera>\n")
 
                     // Embedded photo info balloon
+                    val imgSrc = if (base64Thumbnail != null) {
+                        "data:image/jpeg;base64,$base64Thumbnail"
+                    } else {
+                        "files/${safeFileName}"
+                    }
                     sb.append("      <description><![CDATA[\n")
                     sb.append("        <div style=\"font-family: -apple-system, Roboto, sans-serif; min-width: 280px; max-width: 440px; color: #1a202c;\">\n")
                     sb.append("          <h3 style=\"margin: 0 0 8px 0; color: #00838f;\">${escapeXml(item.displayName)}</h3>\n")
-                    sb.append("          <img src=\"files/${safeFileName}\" style=\"width: 100%; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); margin-bottom: 8px;\" /><br/>\n")
+                    sb.append("          <img src=\"$imgSrc\" style=\"width: 100%; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); margin-bottom: 8px;\" /><br/>\n")
                     sb.append("          <table style=\"width: 100%; font-size: 11.5px; border-collapse: collapse; line-height: 1.5;\">\n")
                     sb.append("            <tr style=\"background: #e0f7fa;\"><td style=\"padding: 3px 6px; font-weight: bold;\">True Bearing:</td><td style=\"padding: 3px 6px;\">${data.formattedHeading()}</td></tr>\n")
                     sb.append("            <tr><td style=\"padding: 3px 6px; font-weight: bold;\">Pitch / Tilt:</td><td style=\"padding: 3px 6px;\">${data.formattedElevation()}</td></tr>\n")
@@ -336,6 +357,85 @@ object GisExportHelper {
                 }
                 Uri.fromFile(file)
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    /**
+     * Generates a fast, orientation-corrected Base64 JPEG data payload for Google Earth mobile/web
+     * cards and HTML balloons where local relative file paths inside KMZ archives are blocked by sandboxing.
+     */
+    private fun createOptimizedBase64(
+        context: Context,
+        uri: Uri,
+        maxDimension: Int = 960,
+        quality: Int = 75
+    ): String? {
+        return try {
+            val orientation = context.contentResolver.openInputStream(uri)?.use { stream ->
+                try {
+                    val exif = ExifInterface(stream)
+                    exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+                } catch (e: Exception) {
+                    ExifInterface.ORIENTATION_NORMAL
+                }
+            } ?: ExifInterface.ORIENTATION_NORMAL
+
+            val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            context.contentResolver.openInputStream(uri)?.use { stream ->
+                BitmapFactory.decodeStream(stream, null, options)
+            }
+            val origW = options.outWidth
+            val origH = options.outHeight
+            if (origW <= 0 || origH <= 0) return null
+
+            var sampleSize = 1
+            val maxDim = maxOf(origW, origH)
+            while (maxDim / (sampleSize * 2) >= maxDimension) {
+                sampleSize *= 2
+            }
+
+            val decodeOptions = BitmapFactory.Options().apply { inSampleSize = sampleSize }
+            val decoded = context.contentResolver.openInputStream(uri)?.use { stream ->
+                BitmapFactory.decodeStream(stream, null, decodeOptions)
+            } ?: return null
+
+            val matrix = Matrix()
+            when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+                ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+                ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+                ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.postScale(-1f, 1f)
+                ExifInterface.ORIENTATION_FLIP_VERTICAL -> matrix.postScale(1f, -1f)
+            }
+
+            val upright = if (!matrix.isIdentity) {
+                val rotated = Bitmap.createBitmap(decoded, 0, 0, decoded.width, decoded.height, matrix, true)
+                decoded.recycle()
+                rotated
+            } else {
+                decoded
+            }
+
+            val currentMax = maxOf(upright.width, upright.height)
+            val finalBitmap = if (currentMax > maxDimension) {
+                val scale = maxDimension.toFloat() / currentMax.toFloat()
+                val targetW = (upright.width * scale).toInt().coerceAtLeast(1)
+                val targetH = (upright.height * scale).toInt().coerceAtLeast(1)
+                val scaled = Bitmap.createScaledBitmap(upright, targetW, targetH, true)
+                if (scaled != upright) upright.recycle()
+                scaled
+            } else {
+                upright
+            }
+
+            val outputStream = ByteArrayOutputStream()
+            finalBitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
+            finalBitmap.recycle()
+            val bytes = outputStream.toByteArray()
+            Base64.encodeToString(bytes, Base64.NO_WRAP)
         } catch (e: Exception) {
             e.printStackTrace()
             null
