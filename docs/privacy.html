@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — Telemetry Camera</title>
+  <style>
+    :root {
+      --bg: #0B111A;
+      --card-bg: #131E2B;
+      --border: #1E2E42;
+      --cyan: #00E5FF;
+      --amber: #F59E0B;
+      --text: #E2E8F0;
+      --muted: #94A3B8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      padding: 32px 16px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 28px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .badge {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-family: monospace;
+      background: rgba(0, 229, 255, 0.12);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 1px;
+    }
+    .meta {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 8px;
+      font-family: monospace;
+    }
+    h2 {
+      font-size: 19px;
+      color: #FFFFFF;
+      margin-top: 32px;
+      margin-bottom: 12px;
+      border-left: 3px solid var(--cyan);
+      padding-left: 12px;
+    }
+    p {
+      margin-bottom: 16px;
+      color: #CBD5E1;
+      font-size: 15px;
+    }
+    ul {
+      margin: 12px 0 20px 24px;
+      color: #CBD5E1;
+      font-size: 15px;
+    }
+    li {
+      margin-bottom: 8px;
+    }
+    strong {
+      color: #FFFFFF;
+    }
+    .highlight-card {
+      background: rgba(0, 229, 255, 0.05);
+      border: 1px solid rgba(0, 229, 255, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 24px 0;
+    }
+    .highlight-card p {
+      margin: 0;
+      color: #E2E8F0;
+    }
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
+      text-align: center;
+    }
+    a {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Telemetry Camera <span class="badge">Privacy Policy</span></h1>
+      <div class="meta">Developer: CodeWarren &bull; Last Updated: November 1, 2026</div>
+    </div>
+
+    <div class="highlight-card">
+      <p><strong>Core Privacy Commitment:</strong> Telemetry Camera is built on a 100% on-device, offline-first philosophy. The application does not collect, track, transmit, monetize, or share your photos, videos, audio, location coordinates, or telemetry data with anyone. Ever.</p>
+    </div>
+
+    <h2>1. Overview</h2>
+    <p>This Privacy Policy describes how Telemetry Camera ("we", "our", or "the app"), developed by CodeWarren, handles your data. We respect your fundamental right to privacy and have designed Telemetry Camera so that all computations, sensor sampling, and file operations remain entirely contained within your physical Android device.</p>
+
+    <h2>2. Permissions and Data Handling</h2>
+    <p>To function as an optical survey and telemetry recording camera, Telemetry Camera requests the following Android runtime permissions:</p>
+    <ul>
+      <li><strong>Camera (<code>android.permission.CAMERA</code>):</strong> Used solely to display the real-time optical viewfinder preview and to capture high-resolution photos and videos. Optical image frames are processed on-device and never sent to external servers.</li>
+      <li><strong>Precise & Coarse Location (<code>android.permission.ACCESS_FINE_LOCATION</code>, <code>android.permission.ACCESS_COARSE_LOCATION</code>):</strong> Used exclusively to read on-device GNSS coordinates, true altitude, ground speed, and heading, and to compute local magnetic declination via the World Magnetic Model (WMM). Location readings are embedded into your photo EXIF metadata and companion JSON sidecars on local storage. We do not transmit or log your location history anywhere.</li>
+      <li><strong>Microphone (<code>android.permission.RECORD_AUDIO</code>):</strong> Used solely to capture audio when you record video in Video mode. The microphone is never accessed during photo shooting or in the background.</li>
+      <li><strong>Sensors (Magnetometer, Accelerometer, Gyroscope, Barometer):</strong> Used on-device to compute real-time pitch, roll, orientation, and barometric pressure. Sensor readings are never broadcast or shared.</li>
+      <li><strong>Storage / MediaStore Access:</strong> Used to write your photos, videos, and GIS companion export files directly to your device's photo gallery and file system.</li>
+    </ul>
+
+    <h2>3. Zero Third-Party Tracking & Analytics</h2>
+    <p>Telemetry Camera does not contain:</p>
+    <ul>
+      <li>No advertising SDKs (no AdMob, Unity, AppLovin, etc.)</li>
+      <li>No analytics SDKs (no Google Analytics, Firebase Analytics, Flurry, etc.)</li>
+      <li>No crash reporting SDKs that upload telemetry dumps to third-party clouds</li>
+      <li>No user account registration, login credentials, or device fingerprinting</li>
+    </ul>
+
+    <h2>4. Data Retention & Control</h2>
+    <p>Because all data remains exclusively on your hardware, you retain complete ownership and sovereignty over your photos and metadata. You can delete, export, or transfer photos at any time through the in-app gallery or standard Android file managers. Uninstalling the app leaves no remote traces or residual cloud data.</p>
+
+    <h2>5. Children's Privacy</h2>
+    <p>Telemetry Camera does not solicit or collect personal information from any user, including children under the age of 13. The application is rated for general audiences.</p>
+
+    <h2>6. Changes to this Policy</h2>
+    <p>If we update this Privacy Policy in the future, the revised document will be published at this permanent URL with an updated effective date.</p>
+
+    <h2>7. Contact & Inquiries</h2>
+    <p>If you have any questions, feedback, or inquiries regarding this Privacy Policy or Telemetry Camera's on-device privacy protections, please reach out via email or GitHub:</p>
+    <ul>
+      <li><strong>Support Email:</strong> <a href="mailto:telemetrycamera@codewarren.com">telemetrycamera@codewarren.com</a></li>
+      <li><strong>GitHub Issues:</strong> <a href="https://github.com/foofoodog/telemetry-camera/issues">github.com/foofoodog/telemetry-camera/issues</a></li>
+      <li><strong>Project Home:</strong> <a href="https://github.com/foofoodog/telemetry-camera">github.com/foofoodog/telemetry-camera</a></li>
+    </ul>
+
+    <div class="footer">
+      &copy; 2026 CodeWarren. All rights reserved.
+    </div>
+  </div>
+</body>
+</html>

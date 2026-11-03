@@ -1,0 +1,44 @@
+Telemetry Camera is a professional optical survey and field camera featuring a real-time avionics Heads-Up Display (HUD) projected over the live viewfinder. Built for surveyors, engineers, first responders, inspectors, and outdoor enthusiasts, Telemetry Camera combines precision hardware sensor fusion with non-destructive metadata preservation.  
+
+Every photo preserves 100% of raw sensor metrics inside standard EXIF tags, structured companion JSON sidecars, and Google Earth 3D KMZ bundles—ready for archival verification and GIS analysis.  
+
+KEY CAPABILITIES  
+
+REAL-TIME AVIONICS HUD:  
+• Artificial Horizon & Pitch Ladder: Real-time elevation and roll indicators with dynamic leveling.  
+• Center Reticle & Ranging Grid: Milliradian and degree graduations for distance and height estimation.  
+• Top Telemetry Banner: Microsecond-accurate UTC/local timestamp, barometric altitude, GNSS accuracy, and air pressure.  
+• Cockpit Dashboard: Ground speed, track bearing, heading, elevation angle, and lateral tilt.  
+• One-Tap HUD Toggle: Quickly reveal or collapse the live HUD overlay.  
+
+TRUE NORTH GEOMAGNETIC SURVEYING:  
+• NOAA Declination: Calculates local magnetic declination via the World Magnetic Model (WMM).  
+• Dual North Reference: Switch seamlessly between True Geographic North and Magnetic North.  
+• Multi-Mode Compass: Degrees & Cardinal, Degrees Only, Cardinal Only, or Hidden.  
+
+GOOGLE EARTH 3D KMZ & GIS EXPORTS:  
+• Standalone KMZ Survey Bundles: Package entire surveys into a single .KMZ file with full-res photos, interactive HTML popups, and 3D camera viewports that reorient Google Earth to your exact physical viewpoint, pitch, and heading.  
+• Lightweight KML & GPX: Export clean placemarks and Garmin-compatible GPX 1.1 waypoints for QGIS, ArcGIS, and Gaia GPS.  
+• Companion JSON: Export 35+ precision telemetry metrics per photo.  
+
+SOLAR & LUNAR EPHEMERIS:  
+• Astronomical Tracking: Real-time azimuth and elevation tracking for the Sun and Moon.  
+• Sky Reticle Markers: Visual indicators appear directly in the sky reticle when pointing toward the Sun or Moon.  
+
+SYNCHRONIZED VIDEO RECORDING (.SRT):  
+• HD Video Capture: Continuous CameraX sensor logging.  
+• Companion Subtitles: Synchronized per-second .SRT subtitle files tracking heading, pitch, roll, altitude, speed, and GPS coordinates during playback in VLC.  
+
+BUILT-IN OFFLINE FIELD MANUAL:  
+• 100% Offline Guide: Digital phototheodolite manual with 11 field use cases (triangulation, telecom, solar, forestry, marine, disaster response).  
+• Searchable Glossary: Instant search across sensors, HUD metrics, and formulas with one-tap deep links to settings.  
+
+PRIVACY FIRST & 100% ON-DEVICE:  
+• 100% Offline: All sensor fusion and camera frames remain strictly on your physical device.  
+• Zero Analytics: No trackers, no analytics SDKs, and no cloud uploads.  
+• Ad-Free: No banner ads, no popups, and no paywalls.  
+
+PERMISSIONS:  
+• Camera: Viewfinder preview and image capture.  
+• Location: Coordinates, altitude, heading, and declination.  
+• Microphone: Audio capture during video recording.  

@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+    <title>Telemetry Camera Field User Guide</title>
+    <style>
+
+:root {
+    --bg-color: #121212;
+    --card-bg: #1c2327;
+    --border-color: #263843;
+    --text-primary: #e0e8ec;
+    --text-secondary: #90a4ae;
+    --accent-cyan: #00e5ff;
+    --accent-amber: #ffb300;
+    --code-bg: #161b1e;
+    --quote-bg: #10242e;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-mono: "SF Mono", "Fira Code", "Roboto Mono", monospace;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    margin: 0;
+    padding: 16px 20px 80px 20px;
+    font-size: 15px;
+    -webkit-text-size-adjust: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #ffffff;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-top: 1.6em;
+    margin-bottom: 0.5em;
+    scroll-margin-top: 20px;
+}
+
+h1 {
+    font-size: 1.7em;
+    color: var(--accent-cyan);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 8px;
+    margin-top: 0.2em;
+}
+
+h2 {
+    font-size: 1.35em;
+    color: var(--accent-cyan);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 6px;
+}
+
+h3 {
+    font-size: 1.15em;
+    color: #b2ebf2;
+}
+
+h4 {
+    font-size: 1.02em;
+    color: var(--accent-amber);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+h5 {
+    font-size: 0.95em;
+    color: #81d4fa;
+}
+
+p, ul, ol {
+    margin: 0.7em 0;
+}
+
+ul, ol {
+    padding-left: 22px;
+}
+
+li {
+    margin: 0.35em 0;
+}
+
+a {
+    color: var(--accent-cyan);
+    text-decoration: none;
+}
+
+a:hover, a:active {
+    text-decoration: underline;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 28px 0;
+}
+
+blockquote {
+    margin: 1em 0;
+    padding: 12px 16px;
+    background-color: var(--quote-bg);
+    border-left: 4px solid var(--accent-cyan);
+    border-radius: 0 8px 8px 0;
+    color: #eceff1;
+}
+
+blockquote p {
+    margin: 0.3em 0;
+}
+
+code {
+    background-color: var(--code-bg);
+    color: #4dd0e1;
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #22323a;
+}
+
+pre {
+    background-color: var(--code-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 14px;
+    overflow-x: auto;
+    margin: 1em 0;
+}
+
+pre code {
+    background: none;
+    color: #cfd8dc;
+    border: none;
+    padding: 0;
+    font-size: 0.85em;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    display: block;
+    margin: 14px auto;
+    background-color: #000000;
+}
+
+p align="center", div[align="center"] {
+    text-align: center;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+    font-size: 0.9em;
+}
+
+th, td {
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #172b36;
+    color: var(--accent-cyan);
+}
+
+tr:nth-child(even) {
+    background-color: #151e23;
+}
+
+/* Floating Table of Contents Shortcut Button */
+#toc-fab {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #003740;
+    color: var(--accent-cyan);
+    border: 1px solid var(--accent-cyan);
+    border-radius: 24px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 1000;
+    opacity: 0.92;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+#toc-fab:active {
+    opacity: 1;
+    transform: scale(0.96);
+}
+
+    </style>
+</head>
+<body>
+<a href="#table-of-contents" id="toc-fab">📋 Table of Contents</a>
+<div class="markdown-heading"><h1 class="heading-element">Telemetry Camera — User Guide</h1><a id="telemetry-camera--user-guide" class="anchor" aria-label="Permalink: Telemetry Camera — User Guide" href="#telemetry-camera--user-guide"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>A visual guide to the screens, features, sensors, and telemetry overlay capabilities of <strong>Telemetry Camera</strong>.</p>
+<hr>
+<div class="markdown-heading"><h2 class="heading-element">Table of Contents</h2><a id="table-of-contents" class="anchor" aria-label="Permalink: Table of Contents" href="#table-of-contents"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li>
+<a href="#screen-1-live-camera-viewfinder">Screen 1: Live Camera Viewfinder</a>
+<ul>
+<li><a href="#top-telemetry-banner">Top Telemetry Banner</a></li>
+<li><a href="#artificial-horizon--pitch-ladder">Artificial Horizon &amp; Pitch Ladder</a></li>
+<li><a href="#cockpit--kinematics-cards">Cockpit &amp; Kinematics Cards</a></li>
+<li><a href="#camera-controls">Camera Controls</a></li>
+</ul>
+</li>
+<li>
+<a href="#screen-2-telemetry-gallery-viewer">Screen 2: Telemetry Gallery Viewer</a>
+<ul>
+<li><a href="#interactive-hud-overlay-playback">Interactive HUD Overlay Playback</a></li>
+<li><a href="#tools--gis-export-menu">Tools &amp; GIS Export Menu</a></li>
+<li><a href="#burn-in-watermarked-copy-generator">Burn-in Watermarked Copy Generator</a></li>
+</ul>
+</li>
+<li>
+<a href="#screen-3-settings--configuration">Screen 3: Settings &amp; Configuration</a>
+<ul>
+<li><a href="#general--watermark-controls">General &amp; Watermark Controls</a></li>
+<li><a href="#display-size--coordinate-modes">Display Size &amp; Coordinate Modes</a></li>
+<li><a href="#compass--true-north-declination">Compass &amp; True North Declination</a></li>
+<li><a href="#advanced-field-survey-tools">Advanced Field Survey Tools</a></li>
+</ul>
+</li>
+<li><a href="#synchronized-video-capture--telemetry-subtitles-srt">Synchronized Video Capture &amp; Telemetry Subtitles (.SRT)</a></li>
+<li><a href="#in-app-feature-searchable-telemetry-glossary">In-App Feature: Searchable Telemetry Glossary</a></li>
+<li><a href="#exif--sidecar-metadata-specifications">EXIF &amp; Sidecar Metadata Specifications</a></li>
+<li>
+<a href="#sample-field-use-cases--phototheodolite-workflows">Sample Field Use Cases &amp; Phototheodolite Workflows</a>
+<ul>
+<li><a href="#use-case-1-two-point-triangulation--remote-structure-sizing">Use Case 1: Two-Point Triangulation &amp; Remote Structure Sizing</a></li>
+<li><a href="#use-case-2-telecom-antenna-mechanical-azimuth--downtilt-audit">Use Case 2: Telecom Antenna Mechanical Azimuth &amp; Downtilt Audit</a></li>
+<li><a href="#use-case-3-pipeline--linear-infrastructure-corridors">Use Case 3: Pipeline &amp; Linear Infrastructure Corridors</a></li>
+<li><a href="#use-case-4-incident--accident-timeline-reconstruction">Use Case 4: Incident &amp; Accident Timeline Reconstruction</a></li>
+<li><a href="#use-case-5-solar-farm-feasibility--horizon-shading-analysis">Use Case 5: Solar Farm Feasibility &amp; Horizon Shading Analysis</a></li>
+<li><a href="#use-case-6-wildfire-smoke-spotting--backcountry-initial-attack">Use Case 6: Wildfire Smoke Spotting &amp; Backcountry Initial Attack</a></li>
+<li><a href="#use-case-7-civil-engineering-plumb-settlement--retaining-wall-monitoring">Use Case 7: Civil Engineering Plumb, Settlement &amp; Retaining Wall Monitoring</a></li>
+<li><a href="#use-case-8-forestry-timber-cruises--hazard-tree-assessment">Use Case 8: Forestry Timber Cruises &amp; Hazard Tree Assessment</a></li>
+<li><a href="#use-case-9-insurance-claims--storm-damage-catastrophe-cat-adjusting">Use Case 9: Insurance Claims &amp; Storm Damage Catastrophe (CAT) Adjusting</a></li>
+<li><a href="#use-case-10-drone--uav-ground-control-point-gcp-verification">Use Case 10: Drone / UAV Ground Control Point (GCP) Verification</a></li>
+<li><a href="#use-case-11-marine--coastal-navigation-aid-aton-audits">Use Case 11: Marine &amp; Coastal Navigation Aid (AtoN) Audits</a></li>
+</ul>
+</li>
+</ol>
+<hr>
+<div class="markdown-heading"><h2 class="heading-element">Overview</h2><a id="overview" class="anchor" aria-label="Permalink: Overview" href="#overview"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>Telemetry Camera is engineered for surveying, fieldwork, technical documentation, search and rescue, and outdoor navigation. It pairs high-definition still and video capture with real-time physical attitude (pitch, roll, heading), environmental sensors (barometric pressure, temperature), GPS kinematics (coordinates, altitude, speed, track course), and celestial ephemeris (Sun &amp; Moon position).</p>
+<p>Every photo captured with Telemetry Camera preserves <strong>100% of sensor telemetry</strong> inside standard EXIF tags and structured JSON, allowing lossless playback, GIS mapping, and archival verification.</p>
+<hr>
+<div class="markdown-heading"><h2 class="heading-element">Screen 1: Live Camera Viewfinder</h2><a id="screen-1-live-camera-viewfinder" class="anchor" aria-label="Permalink: Screen 1: Live Camera Viewfinder" href="#screen-1-live-camera-viewfinder"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p align="center">
+  <a target="_blank" rel="noopener noreferrer" href="guide/images/01_camera_screen.webp"><img src="guide/images/01_camera_screen.webp" alt="Live Camera Viewfinder" width="380" style="max-width: 100%;"></a>
+</p>
+<p>The viewfinder features an aerospace Heads-Up Display (HUD) projected over the active camera preview.</p>
+<div class="markdown-heading"><h3 class="heading-element">Top Telemetry Banner</h3><a id="top-telemetry-banner" class="anchor" aria-label="Permalink: Top Telemetry Banner" href="#top-telemetry-banner"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>Date &amp; Timestamp</strong>: Microsecond-accurate date and local 24-hour time (<code>YYYY.MM.DD  HH:MM:SS</code>).</li>
+<li>
+<strong>True Altitude &amp; Accuracy</strong>: Current altitude above Mean Sea Level (MSL) in feet or meters (<code>ALT: 4861ft</code>), alongside the real-time horizontal GNSS 68% confidence radius (<code>±9.8ft</code>).</li>
+<li>
+<strong>Barometric Air Pressure</strong>: Live ambient air pressure sampled from the hardware MEMS barometer sensor in inches of mercury (<code>25.07 inHg</code>) or hectopascals (<code>849.0 hPa</code>).</li>
+<li>
+<strong>Ambient Air Temperature</strong>: Real-time ambient temperature in Fahrenheit (<code>84.2°F</code>) or Celsius (<code>29.0°C</code>).</li>
+<li>
+<strong>Dual GPS Coordinates</strong>:
+<ul>
+<li>
+<strong>Decimal Degrees</strong>: <code>37.81993° N, 122.47825° W</code> (precision GIS standard).</li>
+<li>
+<strong>Degrees, Minutes, Seconds (DMS)</strong>: <code>37°49'11.7"N, 122°28'41.7"W</code> (nautical and aeronautical chart standard).</li>
+</ul>
+</li>
+</ul>
+<div class="markdown-heading"><h3 class="heading-element">Artificial Horizon &amp; Pitch Ladder</h3><a id="artificial-horizon--pitch-ladder" class="anchor" aria-label="Permalink: Artificial Horizon &amp; Pitch Ladder" href="#artificial-horizon--pitch-ladder"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>Center Crosshair Reticle</strong>: Boresighted to the optical center of the camera lens.</li>
+<li>
+<strong>Pitch Ladder Wings</strong>: Dynamic horizon wings that bank and tilt with device roll, showing the true horizontal plane regardless of perspective.</li>
+<li>
+<strong>Angular Ranging Graduations</strong>: Opt-in milliradian and degree tick marks on horizontal and vertical axes to estimate target height ($h = d \cdot \tan\theta$).</li>
+<li>
+<strong>Celestial Ephemeris</strong>: Real-time solar and lunar position indicators (<code>SUN: 083° / -30°</code>, <code>MOON: 130° / +67°</code>) showing celestial azimuth and elevation relative to the horizon.</li>
+</ul>
+<div class="markdown-heading"><h3 class="heading-element">Cockpit &amp; Kinematics Cards</h3><a id="cockpit--kinematics-cards" class="anchor" aria-label="Permalink: Cockpit &amp; Kinematics Cards" href="#cockpit--kinematics-cards"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>HEADING</strong>: 0°–359° compass azimuth formatted with 16-point cardinal direction (<code>293° WNW</code>). Selectable between <strong>Magnetic North</strong> and <strong>True Geographic North</strong> (NOAA WMM declination model).</li>
+<li>
+<strong>ELEVATION (Pitch Angle)</strong>: True optical line-of-sight elevation angle from ground nadir (-90°) to zenith (+90°), with 0.0° at the true horizon.</li>
+<li>
+<strong>TILT / ROLL</strong>: Lateral leveling angle (<code>ROLL: +0.3°</code>) indicating left/right camera banking.</li>
+<li>
+<strong>SPEED</strong>: Ground velocity computed via GPS Doppler kinematics in <code>mph</code> or <code>km/h</code>.</li>
+<li>
+<strong>TRACK BEARING</strong>: True course-over-ground travel vector (<code>TRACK: 142° SE</code>).</li>
+</ul>
+<div class="markdown-heading"><h3 class="heading-element">Camera Controls</h3><a id="camera-controls" class="anchor" aria-label="Permalink: Camera Controls" href="#camera-controls"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>Mode Selector (<code>[ PHOTO | VIDEO ]</code>)</strong>: Toggle between high-res photo capture and synchronized video recording with companion <code>.srt</code> subtitle files.</li>
+<li>
+<strong>Shutter Button</strong>: Large center tactile button (cyan ring for photos, red dot for video).</li>
+<li>
+<strong>Gallery Thumbnail (Bottom-Left)</strong>: Instant shortcut to the Telemetry Gallery showing the most recent capture.</li>
+<li>
+<strong>HUD Twisty Toggle (<code>⌄</code> / <code>⌃</code>) (Bottom-Right)</strong>: Instantly reveals or collapses the entire live HUD overlay on the camera viewfinder with a 1-tap animated twisty.</li>
+<li>
+<strong>Settings Gear (Bottom-Right)</strong>: Opens the comprehensive configuration screen.</li>
+<li>
+<strong>Quick Help (<code>?</code>) (Top-Right)</strong>: Floating button to open the searchable Telemetry Glossary from the viewfinder at any time.</li>
+<li>
+<strong>Tap-to-Focus &amp; Exposure</strong>: Tapping anywhere on the viewfinder triggers automatic focus and auto-exposure metering at that exact point.</li>
+</ul>
+<hr>
+<div class="markdown-heading"><h2 class="heading-element">Screen 2: Telemetry Gallery Viewer</h2><a id="screen-2-telemetry-gallery-viewer" class="anchor" aria-label="Permalink: Screen 2: Telemetry Gallery Viewer" href="#screen-2-telemetry-gallery-viewer"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<table>
+<thead>
+<tr>
+<th align="center">Gallery Photo Viewer</th>
+<th align="center">Tools &amp; GIS Export Menu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><a target="_blank" rel="noopener noreferrer" href="guide/images/02_gallery_screen.webp"><img src="guide/images/02_gallery_screen.webp" alt="Gallery Photo Viewer" width="340" style="max-width: 100%;"></a></td>
+<td align="center"><a target="_blank" rel="noopener noreferrer" href="guide/images/02b_gallery_tools.webp"><img src="guide/images/02b_gallery_tools.webp" alt="Gallery Export Menu" width="340" style="max-width: 100%;"></a></td>
+</tr>
+</tbody>
+</table>
+<p>The Telemetry Gallery allows you to review, inspect, export, and convert photos taken in the field.</p>
+<div class="markdown-heading"><h3 class="heading-element">Interactive HUD Overlay Playback</h3><a id="interactive-hud-overlay-playback" class="anchor" aria-label="Permalink: Interactive HUD Overlay Playback" href="#interactive-hud-overlay-playback"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>Independent HUD Toggle (<code>Layers</code> icon in top bar)</strong>: Displays the telemetry overlay reconstructed directly from the photo's saved EXIF metadata. This functions <strong>100% independently</strong> of whether the live viewfinder HUD was turned on or off during shooting.</li>
+<li>
+<strong>Horizontal Swipe Pager</strong>: Smoothly swipe between photos with beyond-viewport caching.</li>
+<li>
+<strong>Navigation Chevrons</strong>: Floating left and right arrows for one-tap photo sliding.</li>
+<li>
+<strong>Fullscreen Immersion</strong>: Tap the center of the image to hide all chrome and toolbar buttons.</li>
+</ul>
+<div class="markdown-heading"><h3 class="heading-element">Tools &amp; GIS Export Menu</h3><a id="tools--gis-export-menu" class="anchor" aria-label="Permalink: Tools &amp; GIS Export Menu" href="#tools--gis-export-menu"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>Field User Guide</strong>: Instant access to the offline field manual and phototheodolite workflows from within the gallery.</li>
+<li>
+<strong>Glossary &amp; Help</strong>: Searchable glossary of all sensor mathematics, HUD toggles, and direct setting deep links.</li>
+<li>
+<strong>Open in Map App</strong>: One-tap launch to plot the photo's exact coordinates in Google Maps, OsmAnd, or any installed mapping app.</li>
+<li>
+<strong>Export Sidecar JSON</strong>: Exports <code>&lt;photo_name&gt;.json</code> to <code>Pictures/TelemetryCamera/</code> with all raw telemetry metrics for programmatic analysis.</li>
+<li>
+<strong>Export Google Earth KMZ</strong>: Packages all survey captures into a standalone <code>.kmz</code> archive bundling full-resolution photos, 3D <code>&lt;Camera&gt;</code> virtual viewpoints, and interactive HTML popups that open directly in Google Earth.</li>
+<li>
+<strong>Export Survey KML</strong>: Generates lightweight Google Earth <code>.kml</code> placemark files with 6-DoF camera orientations.</li>
+<li>
+<strong>Export Survey GPX</strong>: Generates standard GPS waypoint <code>.gpx</code> files compatible with Garmin GPS devices, QGIS, and ArcGIS.</li>
+</ul>
+<div class="markdown-heading"><h3 class="heading-element">Burn-in Watermarked Copy Generator</h3><a id="burn-in-watermarked-copy-generator" class="anchor" aria-label="Permalink: Burn-in Watermarked Copy Generator" href="#burn-in-watermarked-copy-generator"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>"BURN &amp; SAVE WATERMARKED COPY" Button</strong>: Located at the bottom of the screen when viewing any clean, unburned photo.</li>
+<li>Tapping this button rasterizes the cyan HUD overlay permanently into a duplicate JPEG file (<code>TELEMETRY_BURNED_&lt;timestamp&gt;.jpg</code>), leaving the original clean photo untouched.</li>
+</ul>
+<hr>
+<div class="markdown-heading"><h2 class="heading-element">Screen 3: Settings &amp; Configuration</h2><a id="screen-3-settings--configuration" class="anchor" aria-label="Permalink: Screen 3: Settings &amp; Configuration" href="#screen-3-settings--configuration"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p align="center">
+  <a target="_blank" rel="noopener noreferrer" href="guide/images/03_settings_screen.webp"><img src="guide/images/03_settings_screen.webp" alt="Settings Screen" width="380" style="max-width: 100%;"></a>
+</p>
+<p>Fine-tune every HUD card, unit of measurement, calculation model, and visual display option.</p>
+<div class="markdown-heading"><h3 class="heading-element">General &amp; Watermark Controls</h3><a id="general--watermark-controls" class="anchor" aria-label="Permalink: General &amp; Watermark Controls" href="#general--watermark-controls"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>HUD Overlay</strong>: Master switch for the live camera viewfinder HUD.</li>
+<li>
+<strong>Burn-in by Default</strong>:
+<ul>
+<li>
+<strong>OFF (Default)</strong>: Saves pristine clean photos with 100% telemetry embedded in metadata.</li>
+<li>
+<strong>ON</strong>: Stamps the HUD overlay permanently onto the photo pixels at full sensor resolution.</li>
+</ul>
+</li>
+<li>
+<strong>App Watermark Badge</strong>: Stamps a subtle <code>'⌖ TELEMETRY'</code> badge in the top-right corner to identify metadata-compatible photos when browsing in external galleries (Google Photos, Files).</li>
+</ul>
+<div class="markdown-heading"><h3 class="heading-element">Display Size &amp; Coordinate Modes</h3><a id="display-size--coordinate-modes" class="anchor" aria-label="Permalink: Display Size &amp; Coordinate Modes" href="#display-size--coordinate-modes"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>HUD Display Size</strong>:
+<ul>
+<li>
+<code>Small</code>: Scaled down (0.85×) for minimal viewfinder obstruction.</li>
+<li>
+<code>Medium</code> (Default): Balanced tactical readability.</li>
+<li>
+<code>Large</code>: High-visibility (1.15×) typography and expanded reticle.</li>
+</ul>
+</li>
+<li>
+<strong>GPS Coordinate Formats</strong>:
+<ul>
+<li>
+<code>Both (Decimal &amp; DMS)</code> (Default)</li>
+<li><code>Decimal Only</code></li>
+<li><code>DMS Only</code></li>
+<li><code>Hidden / Off</code></li>
+</ul>
+</li>
+</ul>
+<div class="markdown-heading"><h3 class="heading-element">Compass &amp; True North Declination</h3><a id="compass--true-north-declination" class="anchor" aria-label="Permalink: Compass &amp; True North Declination" href="#compass--true-north-declination"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>North Reference</strong>:
+<ul>
+<li>
+<code>Magnetic North</code>: Uses device magnetometer poles.</li>
+<li>
+<code>True North</code>: Uses GPS location and the NOAA World Magnetic Model (WMM) to calculate and apply local magnetic declination.</li>
+</ul>
+</li>
+<li>
+<strong>Compass Mode</strong>: <code>Degrees &amp; Cardinal</code>, <code>Degrees Only</code>, <code>Cardinal Only</code>, or <code>Hidden</code>.</li>
+</ul>
+<div class="markdown-heading"><h3 class="heading-element">Advanced Field Survey Tools</h3><a id="advanced-field-survey-tools" class="anchor" aria-label="Permalink: Advanced Field Survey Tools" href="#advanced-field-survey-tools"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>Sun &amp; Moon Ephemeris</strong>: Calculates real-time solar/lunar azimuth and elevation coordinates.</li>
+<li>
+<strong>Angular Ranging Grid</strong>: Calibrated milliradian and degree tick marks along the horizontal and vertical boresight reticle axes.</li>
+</ul>
+<div class="markdown-heading"><h4 class="heading-element">Understanding &amp; Using the Angular Ranging Grid</h4><a id="understanding--using-the-angular-ranging-grid" class="anchor" aria-label="Permalink: Understanding &amp; Using the Angular Ranging Grid" href="#understanding--using-the-angular-ranging-grid"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>The reticle grid utilizes <strong>optical stadia rangefinding</strong> (the same method used in surveying theodolites, artillery optics, and Mil-Dot tactical scopes) based on the geometric relationship between angular subtense, target size, and distance:</p>
+<p>$$\text{Height} = \text{Distance} \times \tan(\theta)$$</p>
+<ol>
+<li>
+<p><strong>Estimating Object Height or Width</strong> (when distance is known, e.g., via map or laser rangefinder):
+$$\text{Height (m)} = \frac{\text{Distance (m)} \times \text{Angular Spread in Mils}}{1000}$$</p>
+<ul>
+<li>
+<em>Example</em>: You are standing 50 meters away from an antenna tower. The tower spans 80 mils on the vertical reticle. Its height is $(50 \times 80) / 1000 = 4.0\text{ meters}$.</li>
+</ul>
+</li>
+<li>
+<p><strong>Estimating Distance to a Target</strong> (when target size is known):
+$$\text{Distance (m)} = \frac{\text{Known Target Size (m)} \times 1000}{\text{Angular Spread in Mils}}$$</p>
+<ul>
+<li>
+<em>Example</em>: A standard 2.0-meter tall vehicle spans 10 mils between the horizontal crosshair ticks. Distance to the vehicle is $(2.0 \times 1000) / 10 = 200\text{ meters}$.</li>
+</ul>
+</li>
+<li>
+<p><strong>Leveling &amp; Plumb Verification</strong>: The vertical and horizontal ticks remain calibrated to true optical center, allowing immediate detection of structural tilt or leaning poles.</p>
+</li>
+</ol>
+<hr>
+<div class="markdown-heading"><h2 class="heading-element">Synchronized Video Capture &amp; Telemetry Subtitles (.SRT)</h2><a id="synchronized-video-capture--telemetry-subtitles-srt" class="anchor" aria-label="Permalink: Synchronized Video Capture &amp; Telemetry Subtitles (.SRT)" href="#synchronized-video-capture--telemetry-subtitles-srt"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>Switch to <strong>VIDEO</strong> mode on the camera viewfinder using the mode toggle above the shutter button to record high-definition video with continuous sensor logging.</p>
+<p>Telemetry Camera saves both an MP4 video file and a synchronized companion SubRip (<code>.srt</code>) subtitle file to <code>Movies/TelemetryCamera/</code>:</p>
+<ul>
+<li><code>TELEMETRY_VIDEO_&lt;timestamp&gt;.mp4</code></li>
+<li><code>TELEMETRY_VIDEO_&lt;timestamp&gt;.srt</code></li>
+</ul>
+<div class="markdown-heading"><h3 class="heading-element">Per-Second Telemetry Format</h3><a id="per-second-telemetry-format" class="anchor" aria-label="Permalink: Per-Second Telemetry Format" href="#per-second-telemetry-format"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>Every second of recording captures real-time sensor fusion data formatted for universal media player compatibility:</p>
+<pre lang="text"><code>1
+00:00:00,000 --&gt; 00:00:01,000
+HDG: 284° WNW T | PITCH: +3.7° | ROLL: +0.0°
+ALT: Alt: 5280ft (±10ft) | SPD: 15.2 mph | 37.81993° N, 122.47826° W
+</code></pre>
+<div class="markdown-heading"><h3 class="heading-element">Making Good Use of Video Telemetry</h3><a id="making-good-use-of-video-telemetry" class="anchor" aria-label="Permalink: Making Good Use of Video Telemetry" href="#making-good-use-of-video-telemetry"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h4 class="heading-element">1. Instant Playback with Toggleable Telemetry (VLC, MPV, QuickTime)</h4><a id="1-instant-playback-with-toggleable-telemetry-vlc-mpv-quicktime" class="anchor" aria-label="Permalink: 1. Instant Playback with Toggleable Telemetry (VLC, MPV, QuickTime)" href="#1-instant-playback-with-toggleable-telemetry-vlc-mpv-quicktime"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>Keeping the <code>.mp4</code> and <code>.srt</code> in the same directory allows media players like <strong>VLC</strong> or <strong>MPV</strong> to automatically display the live telemetry at the bottom of the screen.</li>
+<li>
+<strong>Clean Footage Preservation</strong>: The raw camera footage remains completely un-degraded and pristine. You can toggle the telemetry overlay ON or OFF with the player's subtitle shortcut (e.g. <code>V</code> in VLC).</li>
+</ul>
+<div class="markdown-heading"><h4 class="heading-element">2. Burning HUD Telemetry into Video for Deliverables (FFmpeg)</h4><a id="2-burning-hud-telemetry-into-video-for-deliverables-ffmpeg" class="anchor" aria-label="Permalink: 2. Burning HUD Telemetry into Video for Deliverables (FFmpeg)" href="#2-burning-hud-telemetry-into-video-for-deliverables-ffmpeg"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>For engineering reports, client audits, or legal submissions where the telemetry must be permanently stamped into every video frame:</p>
+<div class="highlight highlight-source-shell"><pre>ffmpeg -i TELEMETRY_VIDEO_<span class="pl-k">&lt;</span>timestamp<span class="pl-k">&gt;</span>.mp4 \
+  -vf <span class="pl-s"><span class="pl-pds">"</span>subtitles=TELEMETRY_VIDEO_&lt;timestamp&gt;.srt:force_style='Fontname=Monospace,FontSize=16,PrimaryColour=&amp;H00FFFF,BorderStyle=3,Outline=1,Shadow=0,MarginV=25'<span class="pl-pds">"</span></span> \
+  -c:a copy TELEMETRY_BURNED_OUTPUT.mp4</pre></div>
+<p><em>(You can also use HandBrake by importing the <code>.srt</code> under the Subtitles tab and selecting <strong>Burn-in</strong>).</em></p>
+<div class="markdown-heading"><h4 class="heading-element">3. Professional Post-Production (DaVinci Resolve / Premiere Pro / Final Cut)</h4><a id="3-professional-post-production-davinci-resolve--premiere-pro--final-cut" class="anchor" aria-label="Permalink: 3. Professional Post-Production (DaVinci Resolve / Premiere Pro / Final Cut)" href="#3-professional-post-production-davinci-resolve--premiere-pro--final-cut"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>Drop the <code>.mp4</code> onto Video Track 1 and the <code>.srt</code> onto a Subtitle Track.</li>
+<li>Customize fonts, bounding box colors, margins, and sizes to produce broadcast-quality tactical graphics or documentary HUD overlays.</li>
+</ul>
+<div class="markdown-heading"><h4 class="heading-element">4. Field Industry Applications</h4><a id="4-field-industry-applications" class="anchor" aria-label="Permalink: 4. Field Industry Applications" href="#4-field-industry-applications"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>Cell Tower &amp; Telecom Audits</strong>: Sweep antennas while recording to log the exact mechanical azimuth (heading) and downtilt (pitch) continuously.</li>
+<li>
+<strong>Pipeline &amp; Infrastructure Surveys</strong>: Record perimeter walks or drive-bys with continuous sub-meter location and orientation stamps.</li>
+<li>
+<strong>Incident &amp; Accident Documentation</strong>: Verifiable second-by-second timeline tracking vehicle/vessel speed, tilt angle, direction, and coordinates.</li>
+<li>
+<strong>Off-Road &amp; Trail Mapping</strong>: Record trail ascents with dynamic pitch, roll (banking angle), and elevation changes logged throughout the run.</li>
+</ul>
+<hr>
+<div class="markdown-heading"><h2 class="heading-element">In-App Feature: Searchable Telemetry Glossary</h2><a id="in-app-feature-searchable-telemetry-glossary" class="anchor" aria-label="Permalink: In-App Feature: Searchable Telemetry Glossary" href="#in-app-feature-searchable-telemetry-glossary"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p align="center">
+  <a target="_blank" rel="noopener noreferrer" href="guide/images/04_glossary_dialog.webp"><img src="guide/images/04_glossary_dialog.webp" alt="Searchable Telemetry Glossary" width="380" style="max-width: 100%;"></a>
+</p>
+<p>The built-in Telemetry Glossary is accessible via the <code>?</code> icon from <strong>every screen</strong> in the app (Camera Viewfinder, Settings, and Gallery Tools menu).</p>
+<div class="markdown-heading"><h3 class="heading-element">Glossary Features</h3><a id="glossary-features" class="anchor" aria-label="Permalink: Glossary Features" href="#glossary-features"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>Full Search</strong>: Filter toggles, metrics, sensors, and mathematical formulas in real time.</li>
+<li>
+<strong>Screen Category Filter Pills</strong>: Quickly narrow terms by app screen:
+<ul>
+<li>
+<code>ALL</code> (Overview grouped with section headers: <code>CAMERA VIEWFINDER</code>, <code>GALLERY VIEWER</code>, <code>SETTINGS &amp; CONFIG</code>)</li>
+<li>
+<code>CAMERA</code> (Viewfinder HUD, 3A metering, horizon ladder, pitch/roll attitude, GNSS kinematics, ephemeris, ranging)</li>
+<li>
+<code>GALLERY</code> (Metadata HUD playback, JSON sidecar, GPX/KML GIS export, burn-in watermarking, map launch)</li>
+<li>
+<code>SETTINGS</code> (Burn-in defaults, watermark badges, display scaling, coordinate formats, declination)</li>
+</ul>
+</li>
+<li>
+<strong>Expandable Detail Cards</strong>: Tap any glossary entry to view in-depth explanations, use cases, and underlying sensor fusion mathematics (e.g., $h = d \cdot \tan\theta$, true heading declination equations).</li>
+<li>
+<strong>Direct Settings Deep Links</strong>: Tap the gear icon (<code>⚙️</code>) in any glossary card header or the prominent <strong><code>[ ⚙️ CONFIGURE IN SETTINGS ]</code></strong> button inside expanded cards to jump directly to Settings; the screen automatically scrolls to the corresponding section and highlights it with an animated cyan border.</li>
+</ul>
+<hr>
+<div class="markdown-heading"><h2 class="heading-element">EXIF &amp; Sidecar Metadata Specifications</h2><a id="exif--sidecar-metadata-specifications" class="anchor" aria-label="Permalink: EXIF &amp; Sidecar Metadata Specifications" href="#exif--sidecar-metadata-specifications"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>Every photo taken with Telemetry Camera includes complete telemetry in two locations:</p>
+<div class="markdown-heading"><h3 class="heading-element">1. Structured JSON Payload (<code>ExifInterface.TAG_USER_COMMENT</code>)</h3><a id="1-structured-json-payload-exifinterfacetag_user_comment" class="anchor" aria-label="Permalink: 1. Structured JSON Payload (ExifInterface.TAG_USER_COMMENT)" href="#1-structured-json-payload-exifinterfacetag_user_comment"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-ent">"elevation"</span>: <span class="pl-c1">-12.45</span>,
+  <span class="pl-ent">"heading"</span>: <span class="pl-c1">284.18</span>,
+  <span class="pl-ent">"roll"</span>: <span class="pl-c1">1.82</span>,
+  <span class="pl-ent">"lat"</span>: <span class="pl-c1">37.819928</span>,
+  <span class="pl-ent">"lon"</span>: <span class="pl-c1">-122.478255</span>,
+  <span class="pl-ent">"alt"</span>: <span class="pl-c1">67.06</span>,
+  <span class="pl-ent">"acc"</span>: <span class="pl-c1">3.05</span>,
+  <span class="pl-ent">"baro"</span>: <span class="pl-c1">1013.25</span>,
+  <span class="pl-ent">"temp"</span>: <span class="pl-c1">18.5</span>,
+  <span class="pl-ent">"speed"</span>: <span class="pl-c1">1.25</span>,
+  <span class="pl-ent">"declination"</span>: <span class="pl-c1">7.41</span>,
+  <span class="pl-ent">"sunAz"</span>: <span class="pl-c1">83.4</span>,
+  <span class="pl-ent">"sunEl"</span>: <span class="pl-c1">-30.1</span>,
+  <span class="pl-ent">"moonAz"</span>: <span class="pl-c1">130.2</span>,
+  <span class="pl-ent">"moonEl"</span>: <span class="pl-c1">67.2</span>,
+  <span class="pl-ent">"timestamp"</span>: <span class="pl-c1">1793483155515</span>,
+  <span class="pl-ent">"isBurned"</span>: <span class="pl-c1">false</span>
+}</pre></div>
+<div class="markdown-heading"><h3 class="heading-element">2. Standard Public EXIF Tags</h3><a id="2-standard-public-exif-tags" class="anchor" aria-label="Permalink: 2. Standard Public EXIF Tags" href="#2-standard-public-exif-tags"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<code>TAG_GPS_LATITUDE</code> / <code>TAG_GPS_LATITUDE_REF</code>
+</li>
+<li>
+<code>TAG_GPS_LONGITUDE</code> / <code>TAG_GPS_LONGITUDE_REF</code>
+</li>
+<li>
+<code>TAG_GPS_ALTITUDE</code> / <code>TAG_GPS_ALTITUDE_REF</code>
+</li>
+<li>
+<code>TAG_GPS_IMG_DIRECTION</code> (Bearing in degrees)</li>
+<li>
+<code>TAG_GPS_IMG_DIRECTION_REF</code> (<code>M</code> for Magnetic)</li>
+<li>
+<code>TAG_GPS_SPEED</code> / <code>TAG_GPS_SPEED_REF</code>
+</li>
+<li>
+<code>TAG_GPS_TRACK</code> / <code>TAG_GPS_TRACK_REF</code>
+</li>
+<li>
+<code>TAG_DATETIME_ORIGINAL</code> (ISO 8601 timestamp)</li>
+<li>
+<code>TAG_IMAGE_DESCRIPTION</code> (Human-readable summary of all telemetry metrics)</li>
+<li>
+<code>TAG_SOFTWARE</code>: <code>TelemetryCamera 1.0</code>
+</li>
+</ul>
+<div class="markdown-heading"><h3 class="heading-element">3. Google Earth KMZ 3D Survey Bundle Specification</h3><a id="3-google-earth-kmz-3d-survey-bundle-specification" class="anchor" aria-label="Permalink: 3. Google Earth KMZ 3D Survey Bundle Specification" href="#3-google-earth-kmz-3d-survey-bundle-specification"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>When exporting via <strong>Tools &gt; Export Google Earth KMZ</strong>, the app compiles a self-contained Keyhole Markup Zip archive (<code>TELEMETRY_EARTH_&lt;timestamp&gt;.kmz</code>):</p>
+<pre lang="text"><code>TELEMETRY_EARTH_20261103_132000.kmz
+├── doc.kml                       # 3D Placemarks, styling, and 6-DoF Camera tags
+└── files/
+    ├── img_1_IMG_20261103_01.jpg # Full-resolution captured survey photo
+    ├── img_2_IMG_20261103_02.jpg
+    └── ...
+</code></pre>
+<div class="markdown-heading"><h4 class="heading-element">3D Virtual Viewport (<code>&lt;Camera&gt;</code>) Tag</h4><a id="3d-virtual-viewport-camera-tag" class="anchor" aria-label="Permalink: 3D Virtual Viewport (&lt;Camera&gt;) Tag" href="#3d-virtual-viewport-camera-tag"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>Each placemark attaches the photographer's exact physical 6-DoF orientation:</p>
+<div class="highlight highlight-text-xml"><pre>&lt;<span class="pl-ent">Placemark</span>&gt;
+  &lt;<span class="pl-ent">name</span>&gt;IMG_20261103_01.jpg&lt;/<span class="pl-ent">name</span>&gt;
+  &lt;<span class="pl-ent">Camera</span>&gt;
+    &lt;<span class="pl-ent">longitude</span>&gt;-122.47825&lt;/<span class="pl-ent">longitude</span>&gt;
+    &lt;<span class="pl-ent">latitude</span>&gt;37.81993&lt;/<span class="pl-ent">latitude</span>&gt;
+    &lt;<span class="pl-ent">altitude</span>&gt;67.0&lt;/<span class="pl-ent">altitude</span>&gt;
+    &lt;<span class="pl-ent">heading</span>&gt;284.2&lt;/<span class="pl-ent">heading</span>&gt;
+    &lt;<span class="pl-ent">tilt</span>&gt;77.5&lt;/<span class="pl-ent">tilt</span>&gt; <span class="pl-c"><span class="pl-c">&lt;!--</span> (90° + pitch), 0°=nadir, 90°=horizon, 180°=zenith <span class="pl-c">--&gt;</span></span>
+    &lt;<span class="pl-ent">roll</span>&gt;1.8&lt;/<span class="pl-ent">roll</span>&gt;
+    &lt;<span class="pl-ent">altitudeMode</span>&gt;absolute&lt;/<span class="pl-ent">altitudeMode</span>&gt;
+  &lt;/<span class="pl-ent">Camera</span>&gt;
+  &lt;<span class="pl-ent">Point</span>&gt;
+    &lt;<span class="pl-ent">altitudeMode</span>&gt;absolute&lt;/<span class="pl-ent">altitudeMode</span>&gt;
+    &lt;<span class="pl-ent">coordinates</span>&gt;-122.47825,37.81993,67.0&lt;/<span class="pl-ent">coordinates</span>&gt;
+  &lt;/<span class="pl-ent">Point</span>&gt;
+&lt;/<span class="pl-ent">Placemark</span>&gt;</pre></div>
+<ul>
+<li>
+<strong>Virtual Reproduction</strong>: Double-clicking the waypoint in Google Earth flies the globe to the photographer's exact station coordinates, orienting the 3D terrain and 3D buildings along the true heading, pitch, and roll of the shot.</li>
+<li>
+<strong>Offline Photo Popups</strong>: Clicking a placemark opens an HTML bubble with the embedded image (<code>files/...</code>) and telemetry table, requiring zero internet access to view on desktop, web, or mobile Google Earth.</li>
+</ul>
+<hr>
+<div class="markdown-heading"><h2 class="heading-element">Sample Field Use Cases &amp; Phototheodolite Workflows</h2><a id="sample-field-use-cases--phototheodolite-workflows" class="anchor" aria-label="Permalink: Sample Field Use Cases &amp; Phototheodolite Workflows" href="#sample-field-use-cases--phototheodolite-workflows"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>Real-world surveying, field engineering, inspection, and photogrammetric workflows powered by Telemetry Camera.</p>
+<hr>
+<div class="markdown-heading"><h3 class="heading-element">Use Case 1: Two-Point Triangulation &amp; Remote Structure Sizing</h3><a id="use-case-1-two-point-triangulation--remote-structure-sizing" class="anchor" aria-label="Permalink: Use Case 1: Two-Point Triangulation &amp; Remote Structure Sizing" href="#use-case-1-two-point-triangulation--remote-structure-sizing"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h4 class="heading-element">Objective / Survey Question</h4><a id="objective--survey-question" class="anchor" aria-label="Permalink: Objective / Survey Question" href="#objective--survey-question"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<blockquote>
+<p><strong>"Can Telemetry Camera function as a digital phototheodolite to calculate the exact distance, elevation, height, and width of a distant building or structure using two baseline observations without laser rangefinders or physical site access?"</strong></p>
+</blockquote>
+<div class="markdown-heading"><h4 class="heading-element">Geodetic Principle</h4><a id="geodetic-principle" class="anchor" aria-label="Permalink: Geodetic Principle" href="#geodetic-principle"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>By pairing sub-meter GNSS positioning with 50 Hz compass heading and optical line-of-sight elevation angles, Telemetry Camera performs classic <strong>forward intersection triangulation</strong>.</p>
+<pre lang="text"><code>                 [ Target Building Corner T ]
+                            /   \
+                           /     \
+                  Ray A   /       \   Ray B
+                         /         \
+              [ Station A ] ------- [ Station B ]
+                     &lt;-- Baseline b --&gt;
+</code></pre>
+<div class="markdown-heading"><h4 class="heading-element">Step-by-Step Field Execution</h4><a id="step-by-step-field-execution" class="anchor" aria-label="Permalink: Step-by-Step Field Execution" href="#step-by-step-field-execution"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h5 class="heading-element">1. Triangulating Ground Distance ($d$) to the Target</h5><a id="1-triangulating-ground-distance-d-to-the-target" class="anchor" aria-label="Permalink: 1. Triangulating Ground Distance ($d$) to the Target" href="#1-triangulating-ground-distance-d-to-the-target"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ol>
+<li>
+<strong>Station A Observation</strong>: Stand at your initial position. Align the central boresight crosshairs directly on a distinct architectural corner ($T$) of the structure and capture Photo 1.
+<ul>
+<li>
+<em>Automatically Logged Telemetry</em>: Coordinates $(Lat_A, Lon_A)$, MSL Altitude ($Alt_A$), and True Bearing Azimuth $\alpha$ (e.g., $040^\circ$).</li>
+</ul>
+</li>
+<li>
+<strong>Station B Observation</strong>: Pace or walk a lateral baseline (30 to 60 meters to the left or right, keeping clear optical line-of-sight). Center the reticle on the <strong>exact same corner</strong> ($T$) and capture Photo 2.
+<ul>
+<li>
+<em>Automatically Logged Telemetry</em>: Coordinates $(Lat_B, Lon_B)$, MSL Altitude ($Alt_B$), and True Bearing Azimuth $\beta$ (e.g., $075^\circ$).</li>
+</ul>
+</li>
+<li>
+<strong>Solve for Distance ($d$)</strong>:
+<ul>
+<li>Compute the <strong>baseline length ($b$)</strong> directly from Station A and B coordinates (using the Haversine formula or the distance between points):
+$$b = \text{Distance}(Station_A, Station_B)$$</li>
+<li>Compute interior triangle angles:
+$$\angle A = |\text{Bearing}<em>{AB} - \alpha| \quad \text{and} \quad \angle B = |\text{Bearing}</em>{BA} - \beta|$$</li>
+<li>Apply the <strong>Law of Sines</strong> to determine the direct slant range from Station A to Target $T$:
+$$d = \frac{b \cdot \sin(\angle B)}{\sin(180^\circ - \angle A - \angle B)}$$</li>
+</ul>
+</li>
+</ol>
+<div class="markdown-heading"><h5 class="heading-element">2. Calculating True Structural Height</h5><a id="2-calculating-true-structural-height" class="anchor" aria-label="Permalink: 2. Calculating True Structural Height" href="#2-calculating-true-structural-height"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>Once the distance ($d$) from your observation point to the structure is established:</p>
+<ol>
+<li>In the viewfinder, place the crosshair on the <strong>ground foundation/base</strong> of the building and read the optical <strong>ELEVATION</strong> angle ($\theta_{base}$, e.g., $-2.1^\circ$).</li>
+<li>Tilt upward and place the crosshair on the <strong>roof parapet/zenith</strong> of the building and read the <strong>ELEVATION</strong> angle ($\theta_{roof}$, e.g., $+18.4^\circ$).</li>
+<li>Calculate true vertical height:
+$$\text{Height} = d \cdot \left(\tan(\theta_{roof}) - \tan(\theta_{base})\right)$$
+<em>(Note: $\tan(-2.1^\circ)$ is negative, so subtracting it automatically adds the ground drop below eye level).</em>
+</li>
+</ol>
+<div class="markdown-heading"><h5 class="heading-element">3. Calculating Building Facade Width</h5><a id="3-calculating-building-facade-width" class="anchor" aria-label="Permalink: 3. Calculating Building Facade Width" href="#3-calculating-building-facade-width"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ol>
+<li>From either station, center the crosshairs on the left edge of the building facade.</li>
+<li>Note the angular span or count the calibrated <strong>milliradian ($M$) graduations</strong> across the horizontal crosshair axis to the right edge.</li>
+<li>Compute the facade width:
+$$\text{Width} \approx \frac{d \cdot M}{1000}$$</li>
+</ol>
+<div class="markdown-heading"><h5 class="heading-element">4. Automated Photogrammetry &amp; 3D GIS Reconstruction</h5><a id="4-automated-photogrammetry--3d-gis-reconstruction" class="anchor" aria-label="Permalink: 4. Automated Photogrammetry &amp; 3D GIS Reconstruction" href="#4-automated-photogrammetry--3d-gis-reconstruction"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>Because every photo preserves a companion <strong>Sidecar JSON payload</strong> (<code>TAG_USER_COMMENT</code>) containing the exact 6-Degrees-of-Freedom (6-DoF) camera pose ($Lat, Lon, Alt, Heading, Pitch, Roll$), you can import multiple photos into photogrammetry engines (<strong>Meshroom</strong>, <strong>RealityCapture</strong>, <strong>COLMAP</strong>) or GIS tools (<strong>QGIS</strong>, <strong>Google Earth KML</strong>):</p>
+<ul>
+<li>The software reads the external camera orientation parameters directly from telemetry, drastically accelerating 3D point cloud generation and eliminating scale drift.</li>
+</ul>
+<hr>
+<div class="markdown-heading"><h3 class="heading-element">Use Case 2: Telecom Antenna Mechanical Azimuth &amp; Downtilt Audit</h3><a id="use-case-2-telecom-antenna-mechanical-azimuth--downtilt-audit" class="anchor" aria-label="Permalink: Use Case 2: Telecom Antenna Mechanical Azimuth &amp; Downtilt Audit" href="#use-case-2-telecom-antenna-mechanical-azimuth--downtilt-audit"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h4 class="heading-element">Objective / Survey Question</h4><a id="objective--survey-question-1" class="anchor" aria-label="Permalink: Objective / Survey Question" href="#objective--survey-question-1"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<blockquote>
+<p><strong>"How can field engineers verify that directional cellular antennas (MIMO panels, microwave backhaul dishes) match RF propagation designs without climbing the mast or tower?"</strong></p>
+</blockquote>
+<div class="markdown-heading"><h4 class="heading-element">Field Execution</h4><a id="field-execution" class="anchor" aria-label="Permalink: Field Execution" href="#field-execution"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ol>
+<li>Stand at a designated ground benchmark with a direct sightline to the antenna face.</li>
+<li>Align the reticle with the antenna mounting plane.</li>
+<li>
+<strong>Compass Heading</strong>: Confirms mechanical azimuth relative to True Geographic North (using NOAA WMM declination).</li>
+<li>
+<strong>Elevation Pitch Angle</strong>: Confirms mechanical downtilt angle (e.g., $-3.5^\circ$).</li>
+<li>
+<strong>Lossless Proof</strong>: Export the photo with <strong>Burn &amp; Save Watermarked Copy</strong> or save sidecar JSON to deliver indisputable visual and digital compliance records for telecom tower owners.</li>
+</ol>
+<hr>
+<div class="markdown-heading"><h3 class="heading-element">Use Case 3: Pipeline &amp; Linear Infrastructure Corridors</h3><a id="use-case-3-pipeline--linear-infrastructure-corridors" class="anchor" aria-label="Permalink: Use Case 3: Pipeline &amp; Linear Infrastructure Corridors" href="#use-case-3-pipeline--linear-infrastructure-corridors"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h4 class="heading-element">Objective / Survey Question</h4><a id="objective--survey-question-2" class="anchor" aria-label="Permalink: Objective / Survey Question" href="#objective--survey-question-2"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<blockquote>
+<p><strong>"How can inspection crews produce auditable, continuous geospatial records of pipeline rights-of-way, markers, and valve stations along expansive corridors?"</strong></p>
+</blockquote>
+<div class="markdown-heading"><h4 class="heading-element">Field Execution</h4><a id="field-execution-1" class="anchor" aria-label="Permalink: Field Execution" href="#field-execution-1"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ol>
+<li>Switch between still photography at stationary assets and <strong>Synchronized Video Capture</strong> during vehicle or perimeter sweeps.</li>
+<li>The <code>.srt</code> subtitle stream automatically tracks ground speed, heading, and GPS coordinates second-by-second.</li>
+<li>Engineering teams can review pristine MP4 footage while toggling telemetry captions on or off in media players (VLC, MPV) or burn subtitles permanently into deliverable MP4 files using FFmpeg.</li>
+</ol>
+<hr>
+<div class="markdown-heading"><h3 class="heading-element">Use Case 4: Incident &amp; Accident Timeline Reconstruction</h3><a id="use-case-4-incident--accident-timeline-reconstruction" class="anchor" aria-label="Permalink: Use Case 4: Incident &amp; Accident Timeline Reconstruction" href="#use-case-4-incident--accident-timeline-reconstruction"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h4 class="heading-element">Objective / Survey Question</h4><a id="objective--survey-question-3" class="anchor" aria-label="Permalink: Objective / Survey Question" href="#objective--survey-question-3"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<blockquote>
+<p><strong>"How can forensic investigators document collision scenes, structural failures, or maritime events where sightlines and dynamic physical vectors are critical court evidence?"</strong></p>
+</blockquote>
+<div class="markdown-heading"><h4 class="heading-element">Field Execution</h4><a id="field-execution-2" class="anchor" aria-label="Permalink: Field Execution" href="#field-execution-2"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ol>
+<li>Document skid marks, structural fractures, vehicle orientations, and sightlines.</li>
+<li>Each photo records the precise optical boresight angle, lateral tilt/banking angle, barometric atmospheric pressure, and GPS confidence radius ($\pm\text{accuracy}$).</li>
+<li>Export <strong>Survey KML</strong> to automatically project every incident viewpoint into Google Earth 3D terrain, reproducing the observer's exact field-of-view for forensic reports.</li>
+</ol>
+<hr>
+<div class="markdown-heading"><h3 class="heading-element">Use Case 5: Solar Farm Feasibility &amp; Horizon Shading Analysis</h3><a id="use-case-5-solar-farm-feasibility--horizon-shading-analysis" class="anchor" aria-label="Permalink: Use Case 5: Solar Farm Feasibility &amp; Horizon Shading Analysis" href="#use-case-5-solar-farm-feasibility--horizon-shading-analysis"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h4 class="heading-element">Objective / Survey Question</h4><a id="objective--survey-question-4" class="anchor" aria-label="Permalink: Objective / Survey Question" href="#objective--survey-question-4"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<blockquote>
+<p><strong>"How can solar energy site auditors quickly evaluate horizon obstructions, tree canopy shading, and roof pitch angles against the sun's trajectory throughout the year without carrying bulky specialized sun-path domes?"</strong></p>
+</blockquote>
+<div class="markdown-heading"><h4 class="heading-element">Applied Telemetry Sensors</h4><a id="applied-telemetry-sensors" class="anchor" aria-label="Permalink: Applied Telemetry Sensors" href="#applied-telemetry-sensors"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>Celestial Ephemeris Engine</strong>: Real-time calculated Sun Azimuth &amp; Sun Elevation based on astronomical algorithms (accurate to $\pm0.1^\circ$ for the observer's latitude, longitude, and UTC timestamp).</li>
+<li>
+<strong>Pitch Ladder &amp; Optical Horizon</strong>: Direct optical alignment against ridge lines, tree canopies, or adjacent structures.</li>
+<li>
+<strong>Surface Inclinometer (Roll/Tilt)</strong>: Direct contact measurement of existing roof pitch and mounting planes.</li>
+</ul>
+<div class="markdown-heading"><h4 class="heading-element">Step-by-Step Field Execution</h4><a id="step-by-step-field-execution-1" class="anchor" aria-label="Permalink: Step-by-Step Field Execution" href="#step-by-step-field-execution-1"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ol>
+<li>
+<strong>Roof Pitch Verification</strong>: Place the phone edge flush against the candidate roof plane to record the exact tilt angle (e.g., $28.4^\circ$) and orientation azimuth (e.g., $182^\circ$ True South) in the live roll/pitch readout.</li>
+<li>
+<strong>Horizon &amp; Canopy Obstruction Profiling</strong>: Stand at the prospective solar array corners. Aim the viewfinder boresight at surrounding tree canopies, neighboring buildings, or ridgelines and capture reference photos.</li>
+<li>
+<strong>Sun Ephemeris Comparison</strong>: Compare the optical line-of-sight elevation of obstructions with the sun's calculated solstice and equinox paths. If a distant tree canopy sits at $+14^\circ$ elevation and the winter solstice peak sun elevation is $+22^\circ$, unobstructed winter production is visually and quantitatively confirmed.</li>
+<li>
+<strong>Site Deliverable</strong>: Export KML with embedded view azimuths to superimpose obstruction rays directly into PVsyst, Helioscope, or GIS solar irradiance models.</li>
+</ol>
+<hr>
+<div class="markdown-heading"><h3 class="heading-element">Use Case 6: Wildfire Smoke Spotting &amp; Backcountry Initial Attack</h3><a id="use-case-6-wildfire-smoke-spotting--backcountry-initial-attack" class="anchor" aria-label="Permalink: Use Case 6: Wildfire Smoke Spotting &amp; Backcountry Initial Attack" href="#use-case-6-wildfire-smoke-spotting--backcountry-initial-attack"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h4 class="heading-element">Objective / Survey Question</h4><a id="objective--survey-question-5" class="anchor" aria-label="Permalink: Objective / Survey Question" href="#objective--survey-question-5"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<blockquote>
+<p><strong>"How can fire lookout towers, wildland firefighters, or airborne observers determine the exact map coordinates of a remote wildfire smoke plume across rugged mountainous terrain?"</strong></p>
+</blockquote>
+<div class="markdown-heading"><h4 class="heading-element">Applied Telemetry Sensors</h4><a id="applied-telemetry-sensors-1" class="anchor" aria-label="Permalink: Applied Telemetry Sensors" href="#applied-telemetry-sensors-1"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>True North Compass (NOAA WMM Declination)</strong>: High-speed, tilt-compensated magnetometer azimuth to avoid mountain magnetic anomalies.</li>
+<li>
+<strong>Optical Elevation / Pitch Angle</strong>: Line-of-sight vertical angle to the base of the smoke column.</li>
+<li>
+<strong>Barometric Pressure &amp; MSL Elevation</strong>: Calibrated atmospheric pressure ($hPa$) and barometric altitude for precise observer elevation above base terrain.</li>
+</ul>
+<div class="markdown-heading"><h4 class="heading-element">Step-by-Step Field Execution</h4><a id="step-by-step-field-execution-2" class="anchor" aria-label="Permalink: Step-by-Step Field Execution" href="#step-by-step-field-execution-2"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ol>
+<li>
+<strong>Observer Station 1</strong>: Upon sighting a smoke column, center the reticle directly on the column base where it meets the terrain. Take a snapshot. Telemetry captures $Lat_1, Lon_1$, MSL Altitude $Alt_1$, and Bearing Azimuth $\theta_1$.</li>
+<li>
+<strong>Observer Station 2 (or Second Lookout Tower)</strong>: A second patrol unit or lookout tower 3 to 10 miles away aims at the same plume and captures Photo 2 with $Lat_2, Lon_2$, MSL Altitude $Alt_2$, and Bearing Azimuth $\theta_2$.</li>
+<li>
+<strong>Two-Point Azimuth Intersection</strong>: By plotting the two bearing lines in GIS or dispatch CAD systems, the intersection point defines the exact geographic location (latitude/longitude) of the ignition point, even miles into inaccessible wilderness.</li>
+<li>
+<strong>Elevation &amp; Fire Behavior Verification</strong>: Using the recorded optical pitch angle and known terrain elevation (cross-referenced with the barometric delta), incident commanders can estimate whether the fire is burning in a canyon bottom, mid-slope, or on a ridgeline, informing immediate retardant drop coordinates and egress routes.</li>
+</ol>
+<hr>
+<div class="markdown-heading"><h3 class="heading-element">Use Case 7: Civil Engineering Plumb, Settlement &amp; Retaining Wall Monitoring</h3><a id="use-case-7-civil-engineering-plumb-settlement--retaining-wall-monitoring" class="anchor" aria-label="Permalink: Use Case 7: Civil Engineering Plumb, Settlement &amp; Retaining Wall Monitoring" href="#use-case-7-civil-engineering-plumb-settlement--retaining-wall-monitoring"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h4 class="heading-element">Objective / Survey Question</h4><a id="objective--survey-question-6" class="anchor" aria-label="Permalink: Objective / Survey Question" href="#objective--survey-question-6"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<blockquote>
+<p><strong>"How can structural engineers, building inspectors, and geotechnical teams document retaining wall deflection, bridge abutment settlement, or structural out-of-plumb conditions over time with sub-degree repeatability?"</strong></p>
+</blockquote>
+<div class="markdown-heading"><h4 class="heading-element">Applied Telemetry Sensors</h4><a id="applied-telemetry-sensors-2" class="anchor" aria-label="Permalink: Applied Telemetry Sensors" href="#applied-telemetry-sensors-2"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>Sub-Degree Roll &amp; Tilt Inclinometer</strong>: $0.1^\circ$ precision IMU sensor fusion displaying both digital degrees and intuitive artificial horizon wings.</li>
+<li>
+<strong>Optical Crosshair Boresight</strong>: Precision visual alignment against vertical joints, pilings, and plumb bobs.</li>
+<li>
+<strong>Permanent EXIF &amp; Sidecar Audit Trails</strong>: Cryptographically consistent timestamp, coordinate, and orientation records that prevent tampering.</li>
+</ul>
+<div class="markdown-heading"><h4 class="heading-element">Step-by-Step Field Execution</h4><a id="step-by-step-field-execution-3" class="anchor" aria-label="Permalink: Step-by-Step Field Execution" href="#step-by-step-field-execution-3"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ol>
+<li>
+<strong>Plumb Assessment</strong>: Stand 5–15 meters away from the structure, facing perpendicular to the facade. Align the vertical reticle hair against the edge of the retaining wall, column, or structural wall.</li>
+<li>
+<strong>Tilt &amp; Horizon Alignment</strong>: Level the camera until the artificial horizon indicates $0.0^\circ$ roll. If the vertical edge deviates from the vertical reticle axis, read the angular displacement directly from the crosshair mil graduations or pitch offset.</li>
+<li>
+<strong>Surface-Contact Angle Measurement</strong>: Place the device edge flush against the retaining wall batter face. The HUD inclinometer immediately logs the true tilt angle (e.g., $3.8^\circ$ batter from vertical).</li>
+<li>
+<strong>Baseline Monitoring Over Time</strong>: Generate a <strong>Burn &amp; Save Watermarked Copy</strong> during each monthly inspection. By comparing sequential photos captured from the same GPS benchmark, engineers track milliradian angular shifts, identifying active rotational settlement before catastrophic structural failure occurs.</li>
+</ol>
+<hr>
+<div class="markdown-heading"><h3 class="heading-element">Use Case 8: Forestry Timber Cruises &amp; Hazard Tree Assessment</h3><a id="use-case-8-forestry-timber-cruises--hazard-tree-assessment" class="anchor" aria-label="Permalink: Use Case 8: Forestry Timber Cruises &amp; Hazard Tree Assessment" href="#use-case-8-forestry-timber-cruises--hazard-tree-assessment"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h4 class="heading-element">Objective / Survey Question</h4><a id="objective--survey-question-7" class="anchor" aria-label="Permalink: Objective / Survey Question" href="#objective--survey-question-7"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<blockquote>
+<p><strong>"How can foresters, utility arborists, and municipal tree inspectors calculate standing timber volume, merchantable log height, and fall-hazard clearance to power lines without carrying physical hypsometers?"</strong></p>
+</blockquote>
+<div class="markdown-heading"><h4 class="heading-element">Applied Telemetry Sensors</h4><a id="applied-telemetry-sensors-3" class="anchor" aria-label="Permalink: Applied Telemetry Sensors" href="#applied-telemetry-sensors-3"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>Optical Pitch Ladder</strong>: Vertical angular displacement from base to crown.</li>
+<li>
+<strong>Calibrated Milliradian (Mil) Crosshair Axis</strong>: Angular scale for calculating trunk diameter (Diameter at Breast Height - DBH) and branch spread.</li>
+<li>
+<strong>Geodetic Distance / Step-Pacing Baseline</strong>: Optical triangulation baseline calculation.</li>
+</ul>
+<div class="markdown-heading"><h4 class="heading-element">Step-by-Step Field Execution</h4><a id="step-by-step-field-execution-4" class="anchor" aria-label="Permalink: Step-by-Step Field Execution" href="#step-by-step-field-execution-4"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ol>
+<li>
+<strong>Establish Baseline Distance ($d$)</strong>: Stand at a known distance from the target tree (e.g., 20 meters, verified via GPS pacing or two-point geodetic distance).</li>
+<li>
+<strong>Measure Base &amp; Crown Angles</strong>:
+<ul>
+<li>Aim crosshair at tree trunk base at ground level: read pitch angle $\theta_{base}$ (e.g., $-4.0^\circ$).</li>
+<li>Aim crosshair at total tree height or merchantable top cut: read pitch angle $\theta_{top}$ (e.g., $+48.5^\circ$).</li>
+</ul>
+</li>
+<li>
+<strong>Calculate Tree Height ($H$)</strong>:
+$$H = d \cdot (\tan(\theta_{top}) - \tan(\theta_{base}))$$</li>
+<li>
+<strong>Determine Fall Hazard Distance to Power Lines</strong>:
+<ul>
+<li>Measure the horizontal distance from tree base to the nearest utility wire ($d_{wire}$).</li>
+<li>If calculated tree height $H &gt; d_{wire}$, the tree is quantitatively identified as a strike hazard during windstorms or severe weather events.</li>
+</ul>
+</li>
+<li>
+<strong>Estimate Trunk Diameter (DBH)</strong>: Align the horizontal milliradian crosshair against the trunk at breast height (1.37 m / 4.5 ft above ground). Using $DBH \approx \frac{d \cdot M}{1000}$, log the diameter directly in the field notes alongside the captured high-resolution image.</li>
+</ol>
+<hr>
+<div class="markdown-heading"><h3 class="heading-element">Use Case 9: Insurance Claims &amp; Storm Damage Catastrophe (CAT) Adjusting</h3><a id="use-case-9-insurance-claims--storm-damage-catastrophe-cat-adjusting" class="anchor" aria-label="Permalink: Use Case 9: Insurance Claims &amp; Storm Damage Catastrophe (CAT) Adjusting" href="#use-case-9-insurance-claims--storm-damage-catastrophe-cat-adjusting"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h4 class="heading-element">Objective / Survey Question</h4><a id="objective--survey-question-8" class="anchor" aria-label="Permalink: Objective / Survey Question" href="#objective--survey-question-8"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<blockquote>
+<p><strong>"How can catastrophe (CAT) adjusters and forensic risk assessors capture fraud-proof, time-synchronized documentation of flood levels, windstorm debris trajectories, and hail damage that stand up to legal scrutiny?"</strong></p>
+</blockquote>
+<div class="markdown-heading"><h4 class="heading-element">Applied Telemetry Sensors</h4><a id="applied-telemetry-sensors-4" class="anchor" aria-label="Permalink: Applied Telemetry Sensors" href="#applied-telemetry-sensors-4"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>High-Precision Barometer</strong>: Atmospheric pressure ($hPa$) and pressure altitude, documenting local low-pressure storm passage.</li>
+<li>
+<strong>Lossless Burn-in Metadata Watermarks</strong>: Permanent imprint of UTC timestamp, GPS coordinates, compass bearing, pitch, and altitude directly onto pixel arrays.</li>
+<li>
+<strong>Dual-File Architecture</strong>: Pristine unedited original photo stored alongside the burn-in copy, preserving original cryptographic EXIF tags for evidentiary verification.</li>
+</ul>
+<div class="markdown-heading"><h4 class="heading-element">Step-by-Step Field Execution</h4><a id="step-by-step-field-execution-5" class="anchor" aria-label="Permalink: Step-by-Step Field Execution" href="#step-by-step-field-execution-5"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ol>
+<li>
+<strong>Flood Waterline &amp; Structural High-Water Marks</strong>: Place the central reticle at the highest visible flood line on the building siding. The HUD logs the MSL altitude and pitch angle, establishing the exact flood crest elevation relative to FEMA flood zone base elevations.</li>
+<li>
+<strong>Wind Damage Trajectory Documentation</strong>: When photographing uprooted trees, blown-off shingles, or scattered debris fields, the compass heading in each photo establishes the vector of destructive wind forces, distinguishing microbursts from tornadic rotation.</li>
+<li>
+<strong>Hail Impact Pitch &amp; Direction</strong>: Photograph damaged HVAC condensing unit fins or aluminum siding with the roll and pitch ladder displayed, proving the directional trajectory of hail fall.</li>
+<li>
+<strong>Instant Claim Package Generation</strong>: Tap <strong>Tools &gt; Burn &amp; Save Watermarked Copy</strong> to instantly produce client-ready, insurer-compliant JPEG files that require zero desktop post-processing and cannot be disputed in claims adjustor hearings.</li>
+</ol>
+<hr>
+<div class="markdown-heading"><h3 class="heading-element">Use Case 10: Drone / UAV Ground Control Point (GCP) Verification</h3><a id="use-case-10-drone--uav-ground-control-point-gcp-verification" class="anchor" aria-label="Permalink: Use Case 10: Drone / UAV Ground Control Point (GCP) Verification" href="#use-case-10-drone--uav-ground-control-point-gcp-verification"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h4 class="heading-element">Objective / Survey Question</h4><a id="objective--survey-question-9" class="anchor" aria-label="Permalink: Objective / Survey Question" href="#objective--survey-question-9"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<blockquote>
+<p><strong>"How can commercial drone pilots and photogrammetrists verify ground control point (GCP) target visibility, clear optical sightlines, and GNSS RTK reference validity before launching mapping missions?"</strong></p>
+</blockquote>
+<div class="markdown-heading"><h4 class="heading-element">Applied Telemetry Sensors</h4><a id="applied-telemetry-sensors-5" class="anchor" aria-label="Permalink: Applied Telemetry Sensors" href="#applied-telemetry-sensors-5"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>GNSS Accuracy Radius</strong>: Real-time display of horizontal GPS accuracy ($\pm\text{meters/feet}$) and satellite fix status.</li>
+<li>
+<strong>Mean Sea Level (MSL) Altitude</strong>: Barometric and ellipsoidal elevation cross-referencing.</li>
+<li>
+<strong>Pitch Ladder &amp; 360 Sky Obstruction View</strong>: Verification of multi-rotor launch zones and satellite constellation visibility.</li>
+</ul>
+<div class="markdown-heading"><h4 class="heading-element">Step-by-Step Field Execution</h4><a id="step-by-step-field-execution-6" class="anchor" aria-label="Permalink: Step-by-Step Field Execution" href="#step-by-step-field-execution-6"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ol>
+<li>
+<strong>GCP Target Placement Audit</strong>: Walk to each target board (checkered or Aeropoint target). Hold the camera directly over the target center at nadir (Pitch: $-90^\circ$). Capture a vertical verification photo confirming target cleanliness, coordinate centroid, and ground stability.</li>
+<li>
+<strong>Sky Clearance / Multipath Assessment</strong>: Tilt the camera upward at a $+45^\circ$ angle in the four cardinal directions (N, E, S, W). Capture photos of the surrounding tree canopy and structures to document potential satellite signal occlusion or multipath reflections that could degrade RTK rover fixes.</li>
+<li>
+<strong>Photogrammetric Tie-Point Linking</strong>: Export the survey folder's <strong>KML and Sidecar JSON</strong> into the photogrammetry workflow (Pix4D, DroneDeploy, Agisoft Metashape) as ground-level check stations, ensuring the aerial flight plan aligns with physical ground truth.</li>
+</ol>
+<hr>
+<div class="markdown-heading"><h3 class="heading-element">Use Case 11: Marine &amp; Coastal Navigation Aid (AtoN) Audits</h3><a id="use-case-11-marine--coastal-navigation-aid-aton-audits" class="anchor" aria-label="Permalink: Use Case 11: Marine &amp; Coastal Navigation Aid (AtoN) Audits" href="#use-case-11-marine--coastal-navigation-aid-aton-audits"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h4 class="heading-element">Objective / Survey Question</h4><a id="objective--survey-question-10" class="anchor" aria-label="Permalink: Objective / Survey Question" href="#objective--survey-question-10"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<blockquote>
+<p><strong>"How can harbor masters, marine surveyors, and coast guard auxiliary units audit the positions, light sector bearings, and list/tilt of coastal navigation aids (buoys, beacons, channel markers) from aboard a patrol vessel?"</strong></p>
+</blockquote>
+<div class="markdown-heading"><h4 class="heading-element">Applied Telemetry Sensors</h4><a id="applied-telemetry-sensors-6" class="anchor" aria-label="Permalink: Applied Telemetry Sensors" href="#applied-telemetry-sensors-6"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ul>
+<li>
+<strong>Degrees-Minutes-Seconds (DMS) &amp; Decimal Coordinate Formatting</strong>: Seamless nautical chart and NOAA navigation publication compatibility.</li>
+<li>
+<strong>NOAA World Magnetic Model (WMM) Declination</strong>: Real-time conversion between True Geographic North and Magnetic Compass Bearings.</li>
+<li>
+<strong>Ground Speed &amp; Course Over Ground (COG)</strong>: Dynamic vessel kinematics logging to account for tidal drift and current offset.</li>
+</ul>
+<div class="markdown-heading"><h4 class="heading-element">Step-by-Step Field Execution</h4><a id="step-by-step-field-execution-7" class="anchor" aria-label="Permalink: Step-by-Step Field Execution" href="#step-by-step-field-execution-7"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ol>
+<li>
+<strong>Nautical Coordinate Setup</strong>: In <strong>Settings &gt; Coordinates</strong>, select <strong>DMS ($DD^\circ MM' SS.S''$)</strong> to match paper NOAA nautical charts and maritime chartplotters. Ensure <strong>True North (WMM)</strong> is toggled ON.</li>
+<li>
+<strong>Offshore Buoy / Channel Marker Inspection</strong>: Approach the navigation buoy or beacon. Align the center crosshair on the daymark or light tower from the vessel deck.</li>
+<li>
+<strong>Capture Bearing &amp; List Angle</strong>:
+<ul>
+<li>Read the <strong>Compass Heading</strong> to verify the charted leading line or light sector bearing.</li>
+<li>Read the <strong>Pitch / Roll Inclinometer</strong> to detect listing or mooring anchor drag after severe coastal storms.</li>
+</ul>
+</li>
+<li>
+<strong>Vessel Kinematics Integration</strong>: The video <code>.srt</code> subtitle stream or photo EXIF automatically records vessel speed ($knots$ or $mph$) and track heading during the observation run, compensating for tidal drift.</li>
+<li>
+<strong>Regulatory Reporting</strong>: Export KML directly into coastal GIS platforms to submit Notice to Mariners (NTM) updates or US Coast Guard hazard reports with exact visual and geospatial coordinates.</li>
+</ol>
+
+</body>
+</html>

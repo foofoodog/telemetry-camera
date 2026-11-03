@@ -1,0 +1,15 @@
+name: Clear Actions History
+on:
+  workflow_dispatch: # Allows you to trigger it manually
+
+jobs:
+  clean-history:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Clean Old Runs
+        uses: igorjs/gh-actions-clean-workflow@v8
+        with:
+          runs_older_than: 0 # 0 deletes everything except the current running one
+          runs_to_keep: 0

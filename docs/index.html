@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telemetry Camera — Tactical Optical HUD & Geospatial Survey Camera</title>
+  <style>
+    :root {
+      --bg: #0B111A;
+      --card-bg: #131E2B;
+      --border: #1E2E42;
+      --cyan: #00E5FF;
+      --amber: #F59E0B;
+      --text: #E2E8F0;
+      --muted: #94A3B8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 40px 16px;
+    }
+    .container {
+      max-width: 840px;
+      margin: 0 auto;
+    }
+    .hero {
+      text-align: center;
+      padding: 48px 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+      margin-bottom: 32px;
+    }
+    h1 {
+      font-size: 34px;
+      color: #FFFFFF;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+    h1 span {
+      color: var(--cyan);
+    }
+    p.tagline {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 620px;
+      margin: 0 auto 28px auto;
+    }
+    .btn-group {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn-primary {
+      background: var(--cyan);
+      color: #0B111A;
+    }
+    .btn-primary:hover {
+      background: #33EBFF;
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: #FFFFFF;
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--cyan);
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+    }
+    .feature-card h3 {
+      font-size: 16px;
+      color: var(--cyan);
+      margin-bottom: 8px;
+      font-family: monospace;
+    }
+    .feature-card p {
+      font-size: 14px;
+      color: #CBD5E1;
+    }
+    .footer {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      padding: 20px 0;
+      border-top: 1px solid var(--border);
+    }
+    .footer a {
+      color: var(--cyan);
+      text-decoration: none;
+      margin: 0 8px;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <h1>Telemetry <span>Camera</span></h1>
+      <p class="tagline">Tactical aerospace Heads-Up Display (HUD) camera for Android. Real-time pitch, roll, true heading, barometric altitude, solar/lunar ephemeris, and lossless EXIF metadata preservation.</p>
+      <div class="btn-group">
+        <a href="https://play.google.com/apps/testing/com.codewarren.telemetry.camera" class="btn btn-primary" target="_blank" rel="noopener">Join Google Play Beta</a>
+        <a href="https://github.com/foofoodog/telemetry-camera/releases/latest" class="btn btn-secondary">Download APK (v1.0.0)</a>
+        <a href="https://github.com/foofoodog/telemetry-camera" class="btn btn-secondary">GitHub Repository</a>
+        <a href="privacy.html" class="btn btn-secondary">Privacy Policy</a>
+      </div>
+    </div>
+
+    <div class="features">
+      <div class="feature-card">
+        <h3>&bull; AVIONICS HUD</h3>
+        <p>Live artificial horizon, pitch ladder, roll degrees, and reticle crosshairs with 50 Hz sensor fusion.</p>
+      </div>
+      <div class="feature-card">
+        <h3>&bull; TRUE NORTH SURVEY</h3>
+        <p>Calculates live magnetic declination via NOAA/WMM models for true geographic or magnetic heading.</p>
+      </div>
+      <div class="feature-card">
+        <h3>&bull; 3D GOOGLE EARTH & GIS</h3>
+        <p>Export standalone .KMZ bundles with 3D virtual camera viewports and embedded photo popups.</p>
+      </div>
+      <div class="feature-card">
+        <h3>&bull; SYNCHRONIZED VIDEO</h3>
+        <p>Record HD video with synchronized per-second .SRT subtitle telemetry tracks for VLC and NLE suites.</p>
+      </div>
+      <div class="feature-card">
+        <h3>&bull; OFFLINE FIELD MANUAL</h3>
+        <p>Built-in phototheodolite guide, 11 field use cases, and searchable glossary—100% offline.</p>
+      </div>
+      <div class="feature-card">
+        <h3>&bull; 100% PRIVATE</h3>
+        <p>Zero telemetry analytics, zero cloud tracking, zero ads. All processing and storage stay on-device.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      &copy; 2026 CodeWarren. Distributed under the MIT License.
+      <br>
+      <a href="privacy.html">Privacy Policy</a> &bull;
+      <a href="mailto:telemetrycamera@codewarren.com">Support</a> &bull;
+      <a href="https://github.com/foofoodog/telemetry-camera">Source Code</a> &bull;
+      <a href="https://github.com/foofoodog/telemetry-camera/blob/main/userguide.md">User Guide</a>
+    </div>
+  </div>
+</body>
+</html>
