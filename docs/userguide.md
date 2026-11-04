@@ -49,7 +49,7 @@ Every photo captured with Telemetry Camera preserves **100% of sensor telemetry*
 ## Screen 1: Live Camera Viewfinder
 
 <p align="center">
-  <img src="docs/screenshots/01_camera_screen.png" alt="Live Camera Viewfinder" width="380" />
+  <img src="screenshots/01_camera_screen.png" alt="Live Camera Viewfinder" width="380" />
 </p>
 
 The viewfinder features an aerospace Heads-Up Display (HUD) projected over the active camera preview.
@@ -93,7 +93,7 @@ The viewfinder features an aerospace Heads-Up Display (HUD) projected over the a
 
 | Gallery Photo Viewer | Tools & GIS Export Menu |
 | :---: | :---: |
-| <img src="docs/screenshots/02_gallery_screen.png" alt="Gallery Photo Viewer" width="340" /> | <img src="docs/screenshots/02b_gallery_tools.png" alt="Gallery Export Menu" width="340" /> |
+| <img src="screenshots/02_gallery_screen.png" alt="Gallery Photo Viewer" width="340" /> | <img src="screenshots/02b_gallery_tools.png" alt="Gallery Export Menu" width="340" /> |
 
 The Telemetry Gallery allows you to review, inspect, export, and convert photos taken in the field.
 
@@ -121,7 +121,7 @@ The Telemetry Gallery allows you to review, inspect, export, and convert photos 
 ## Screen 3: Settings & Configuration
 
 <p align="center">
-  <img src="docs/screenshots/03_settings_screen.png" alt="Settings Screen" width="380" />
+  <img src="screenshots/03_settings_screen.png" alt="Settings Screen" width="380" />
 </p>
 
 Fine-tune every HUD card, unit of measurement, calculation model, and visual display option.
@@ -215,7 +215,7 @@ ffmpeg -i TELEMETRY_VIDEO_<timestamp>.mp4 \
 ## In-App Feature: Searchable Telemetry Glossary
 
 <p align="center">
-  <img src="docs/screenshots/04_glossary_dialog.png" alt="Searchable Telemetry Glossary" width="380" />
+  <img src="screenshots/04_glossary_dialog.png" alt="Searchable Telemetry Glossary" width="380" />
 </p>
 
 The built-in Telemetry Glossary is accessible via the `?` icon from **every screen** in the app (Camera Viewfinder, Settings, and Gallery Tools menu).

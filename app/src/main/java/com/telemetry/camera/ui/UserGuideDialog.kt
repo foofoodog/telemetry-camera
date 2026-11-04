@@ -101,7 +101,7 @@ fun UserGuideDialog(
                             onClick = {
                                 val intent = Intent(
                                     Intent.ACTION_VIEW,
-                                    Uri.parse("https://github.com/foofoodog/telemetry-camera/blob/main/userguide.md")
+                                    Uri.parse("https://github.com/foofoodog/telemetry-camera/blob/main/docs/userguide.md")
                                 )
                                 context.startActivity(intent)
                             },

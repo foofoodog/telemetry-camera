@@ -12,7 +12,7 @@ from PIL import Image
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DOCS_SCREENSHOTS = REPO_ROOT / "docs" / "screenshots"
-USERGUIDE_MD = REPO_ROOT / "userguide.md"
+USERGUIDE_MD = REPO_ROOT / "docs" / "userguide.md"
 ASSETS_DIR = REPO_ROOT / "app" / "src" / "main" / "assets"
 ASSETS_IMAGES = ASSETS_DIR / "guide" / "images"
 OUTPUT_HTML = ASSETS_DIR / "userguide.html"

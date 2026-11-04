@@ -10,7 +10,7 @@
 
 A rugged, native Android camera application built with **Kotlin**, **Jetpack Compose**, and **CameraX** engineered for fieldwork, surveying, search and rescue, outdoor navigation, and technical photography. It captures, renders, and persists rich real-time physical, environmental, and spatial telemetry directly alongside high-resolution photos.
 
-[📥 **Download Latest Signed APK**](https://github.com/foofoodog/telemetry-camera/releases/latest) • [🧪 **Join Closed Beta**](https://play.google.com/apps/testing/com.codewarren.telemetry.camera) • [📖 **Visual User Guide**](userguide.md)
+[📥 **Download Latest Signed APK**](https://github.com/foofoodog/telemetry-camera/releases/latest) • [🧪 **Join Closed Beta**](https://play.google.com/apps/testing/com.codewarren.telemetry.camera) • [📖 **Visual User Guide**](docs/userguide.md)
 
 ---
 
@@ -179,10 +179,14 @@ telemetry-camera/
 │   │   │       └── theme/                    # Cyber/tactical HUD color palette and typography
 │   │   └── res/
 │   └── build.gradle.kts
+├── docs/
+│   ├── userguide.md          # Illustrated field user guide
+│   ├── keystore.properties.example # Signing credentials template
+│   ├── screenshots/          # Viewfinder & UI captures
+│   └── store_assets/         # App icons & store graphics
 ├── gradle/libs.versions.toml
 ├── build.gradle.kts
 ├── settings.gradle.kts
-├── keystore.properties.example
 ├── .gitignore
 └── README.md
 ```
@@ -203,9 +207,9 @@ telemetry-camera/
 Output: `app/build/outputs/apk/debug/app-debug.apk`
 
 ### 2. Build Signed Release APK
-1. Copy `keystore.properties.example` to `keystore.properties`:
+1. Copy `docs/keystore.properties.example` to `keystore.properties`:
    ```bash
-   cp keystore.properties.example keystore.properties
+   cp docs/keystore.properties.example keystore.properties
    ```
 2. Fill in your keystore path, alias, and passwords.
 3. Build the release APK:

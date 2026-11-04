@@ -270,7 +270,7 @@ tr:nth-child(even) {
 <hr>
 <div class="markdown-heading"><h2 class="heading-element">Screen 1: Live Camera Viewfinder</h2><a id="screen-1-live-camera-viewfinder" class="anchor" aria-label="Permalink: Screen 1: Live Camera Viewfinder" href="#screen-1-live-camera-viewfinder"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p align="center">
-  <a target="_blank" rel="noopener noreferrer" href="guide/images/01_camera_screen.webp"><img src="guide/images/01_camera_screen.webp" alt="Live Camera Viewfinder" width="380" style="max-width: 100%;"></a>
+  <a target="_blank" rel="noopener noreferrer" href="screenshots/01_camera_screen.png"><img src="screenshots/01_camera_screen.png" alt="Live Camera Viewfinder" width="380" style="max-width: 100%;"></a>
 </p>
 <p>The viewfinder features an aerospace Heads-Up Display (HUD) projected over the active camera preview.</p>
 <div class="markdown-heading"><h3 class="heading-element">Top Telemetry Banner</h3><a id="top-telemetry-banner" class="anchor" aria-label="Permalink: Top Telemetry Banner" href="#top-telemetry-banner"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
@@ -296,9 +296,13 @@ tr:nth-child(even) {
 <div class="markdown-heading"><h3 class="heading-element">Artificial Horizon &amp; Pitch Ladder</h3><a id="artificial-horizon--pitch-ladder" class="anchor" aria-label="Permalink: Artificial Horizon &amp; Pitch Ladder" href="#artificial-horizon--pitch-ladder"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <ul>
 <li>
-<strong>Center Crosshair Reticle</strong>: Boresighted to the optical center of the camera lens.</li>
+<strong>Avionics Primary Flight Display</strong>: True aeronautical artificial horizon instrument with an outer bezel, top bank angle arc (-60° to +60°), and roll pointer.</li>
 <li>
-<strong>Pitch Ladder Wings</strong>: Dynamic horizon wings that bank and tilt with device roll, showing the true horizontal plane regardless of perspective.</li>
+<strong>Dead-Center Aircraft Waterline Boresight</strong>: Stepped aircraft wings (<code>──┐   ┌──</code>), center optical ring, and target dot boresighted to the optical center of the camera lens.</li>
+<li>
+<strong>Roll-Stabilized Pitch Ladder</strong>: Dynamic 0° horizon line and pitch rungs (+10°, +20°, -10°, -20° with horizon reference tips, plus 5° graduation bars) that bank and tilt with device attitude inside the instrument dial.</li>
+<li>
+<strong>Leveling Highlight</strong>: Automatically turns crosshairs and horizon elements green (<code>#22C55E</code>) when the device is level within ±0.8° in both pitch and roll.</li>
 <li>
 <strong>Angular Ranging Graduations</strong>: Opt-in milliradian and degree tick marks on horizontal and vertical axes to estimate target height ($h = d \cdot \tan\theta$).</li>
 <li>
@@ -322,11 +326,11 @@ tr:nth-child(even) {
 <li>
 <strong>Mode Selector (<code>[ PHOTO | VIDEO ]</code>)</strong>: Toggle between high-res photo capture and synchronized video recording with companion <code>.srt</code> subtitle files.</li>
 <li>
-<strong>Shutter Button</strong>: Large center tactile button (cyan ring for photos, red dot for video).</li>
+<strong>Shutter Button</strong>: Large center tactile button (cyan ring for photos, red dot for video). Saves photos instantly via fast background processing.</li>
 <li>
 <strong>Gallery Thumbnail (Bottom-Left)</strong>: Instant shortcut to the Telemetry Gallery showing the most recent capture.</li>
 <li>
-<strong>HUD Twisty Toggle (<code>⌄</code> / <code>⌃</code>) (Bottom-Right)</strong>: Instantly reveals or collapses the entire live HUD overlay on the camera viewfinder with a 1-tap animated twisty.</li>
+<strong>HUD Toggle (<code>Layers</code> icon) (Bottom-Right)</strong>: Instantly reveals or hides the live HUD overlay on the camera viewfinder with a 1-tap button matching the gallery's Layers toggle.</li>
 <li>
 <strong>Settings Gear (Bottom-Right)</strong>: Opens the comprehensive configuration screen.</li>
 <li>
@@ -345,8 +349,8 @@ tr:nth-child(even) {
 </thead>
 <tbody>
 <tr>
-<td align="center"><a target="_blank" rel="noopener noreferrer" href="guide/images/02_gallery_screen.webp"><img src="guide/images/02_gallery_screen.webp" alt="Gallery Photo Viewer" width="340" style="max-width: 100%;"></a></td>
-<td align="center"><a target="_blank" rel="noopener noreferrer" href="guide/images/02b_gallery_tools.webp"><img src="guide/images/02b_gallery_tools.webp" alt="Gallery Export Menu" width="340" style="max-width: 100%;"></a></td>
+<td align="center"><a target="_blank" rel="noopener noreferrer" href="screenshots/02_gallery_screen.png"><img src="screenshots/02_gallery_screen.png" alt="Gallery Photo Viewer" width="340" style="max-width: 100%;"></a></td>
+<td align="center"><a target="_blank" rel="noopener noreferrer" href="screenshots/02b_gallery_tools.png"><img src="screenshots/02b_gallery_tools.png" alt="Gallery Export Menu" width="340" style="max-width: 100%;"></a></td>
 </tr>
 </tbody>
 </table>
@@ -388,24 +392,15 @@ tr:nth-child(even) {
 <hr>
 <div class="markdown-heading"><h2 class="heading-element">Screen 3: Settings &amp; Configuration</h2><a id="screen-3-settings--configuration" class="anchor" aria-label="Permalink: Screen 3: Settings &amp; Configuration" href="#screen-3-settings--configuration"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p align="center">
-  <a target="_blank" rel="noopener noreferrer" href="guide/images/03_settings_screen.webp"><img src="guide/images/03_settings_screen.webp" alt="Settings Screen" width="380" style="max-width: 100%;"></a>
+  <a target="_blank" rel="noopener noreferrer" href="screenshots/03_settings_screen.png"><img src="screenshots/03_settings_screen.png" alt="Settings Screen" width="380" style="max-width: 100%;"></a>
 </p>
 <p>Fine-tune every HUD card, unit of measurement, calculation model, and visual display option.</p>
-<div class="markdown-heading"><h3 class="heading-element">General &amp; Watermark Controls</h3><a id="general--watermark-controls" class="anchor" aria-label="Permalink: General &amp; Watermark Controls" href="#general--watermark-controls"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h3 class="heading-element">Artificial Horizon &amp; Leveling</h3><a id="artificial-horizon--leveling" class="anchor" aria-label="Permalink: Artificial Horizon &amp; Leveling" href="#artificial-horizon--leveling"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <ul>
 <li>
-<strong>HUD Overlay</strong>: Master switch for the live camera viewfinder HUD.</li>
+<strong>Artificial Horizon Widget</strong>: Toggle the central avionics artificial horizon instrument on or off. When enabled, displays the dynamic pitch ladder, roll pointer, bank angle arc, and aircraft waterline boresight.</li>
 <li>
-<strong>Burn-in by Default</strong>:
-<ul>
-<li>
-<strong>OFF (Default)</strong>: Saves pristine clean photos with 100% telemetry embedded in metadata.</li>
-<li>
-<strong>ON</strong>: Stamps the HUD overlay permanently onto the photo pixels at full sensor resolution.</li>
-</ul>
-</li>
-<li>
-<strong>App Watermark Badge</strong>: Stamps a subtle <code>'⌖ TELEMETRY'</code> badge in the top-right corner to identify metadata-compatible photos when browsing in external galleries (Google Photos, Files).</li>
+<em>Note</em>: Master HUD visibility is toggled directly on the live viewfinder screen using the <strong>Layers</strong> icon button. Burned copies with full HUD overlays are created on demand directly in the Gallery.</li>
 </ul>
 <div class="markdown-heading"><h3 class="heading-element">Display Size &amp; Coordinate Modes</h3><a id="display-size--coordinate-modes" class="anchor" aria-label="Permalink: Display Size &amp; Coordinate Modes" href="#display-size--coordinate-modes"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <ul>
@@ -523,7 +518,7 @@ ALT: Alt: 5280ft (±10ft) | SPD: 15.2 mph | 37.81993° N, 122.47826° W
 <hr>
 <div class="markdown-heading"><h2 class="heading-element">In-App Feature: Searchable Telemetry Glossary</h2><a id="in-app-feature-searchable-telemetry-glossary" class="anchor" aria-label="Permalink: In-App Feature: Searchable Telemetry Glossary" href="#in-app-feature-searchable-telemetry-glossary"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p align="center">
-  <a target="_blank" rel="noopener noreferrer" href="guide/images/04_glossary_dialog.webp"><img src="guide/images/04_glossary_dialog.webp" alt="Searchable Telemetry Glossary" width="380" style="max-width: 100%;"></a>
+  <a target="_blank" rel="noopener noreferrer" href="screenshots/04_glossary_dialog.png"><img src="screenshots/04_glossary_dialog.png" alt="Searchable Telemetry Glossary" width="380" style="max-width: 100%;"></a>
 </p>
 <p>The built-in Telemetry Glossary is accessible via the <code>?</code> icon from <strong>every screen</strong> in the app (Camera Viewfinder, Settings, and Gallery Tools menu).</p>
 <div class="markdown-heading"><h3 class="heading-element">Glossary Features</h3><a id="glossary-features" class="anchor" aria-label="Permalink: Glossary Features" href="#glossary-features"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
