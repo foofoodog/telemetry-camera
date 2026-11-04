@@ -28,11 +28,19 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Deselect
+import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.MoreVert
@@ -41,8 +49,12 @@ import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Public
+import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.SaveAlt
+import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.ViewCarousel
+import androidx.compose.ui.draw.clip
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -90,7 +102,19 @@ fun GalleryViewerScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    BackHandler(onBack = onBack)
+    var isMultiSelectMode by remember { mutableStateOf(false) }
+    val selectedPhotos = remember { mutableStateListOf<GalleryPhoto>() }
+    var showBatchDeleteConfirmation by remember { mutableStateOf(false) }
+    var pendingDeletePhotos by remember { mutableStateOf<List<GalleryPhoto>>(emptyList()) }
+
+    BackHandler {
+        if (isMultiSelectMode) {
+            isMultiSelectMode = false
+            selectedPhotos.clear()
+        } else {
+            onBack()
+        }
+    }
 
     var photos by remember { mutableStateOf<List<GalleryPhoto>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
@@ -107,7 +131,16 @@ fun GalleryViewerScreen(
         contract = ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            pendingDeletePhoto?.let { p ->
+            if (pendingDeletePhotos.isNotEmpty()) {
+                val deletedIds = pendingDeletePhotos.map { it.id }.toSet()
+                photos = photos.filter { it.id !in deletedIds }
+                selectedPhotos.removeAll { it.id in deletedIds }
+                Toast.makeText(context, "${pendingDeletePhotos.size} item(s) deleted", Toast.LENGTH_SHORT).show()
+                if (photos.isEmpty()) {
+                    onBack()
+                }
+            } else if (pendingDeletePhoto != null) {
+                val p = pendingDeletePhoto!!
                 photos = photos.filter { it.id != p.id }
                 Toast.makeText(context, if (p.isVideo) "Video deleted" else "Photo deleted", Toast.LENGTH_SHORT).show()
                 if (photos.isEmpty()) {
@@ -116,6 +149,7 @@ fun GalleryViewerScreen(
             }
         }
         pendingDeletePhoto = null
+        pendingDeletePhotos = emptyList()
     }
 
     if (showGlossary) {
@@ -213,29 +247,22 @@ fun GalleryViewerScreen(
         pageCount = { photos.size }
     )
 
-    // Preload telemetry for current, previous, and next photos
-    LaunchedEffect(pagerState.currentPage, photos) {
-        val indicesToLoad = listOf(
-            pagerState.currentPage - 1,
-            pagerState.currentPage,
-            pagerState.currentPage + 1
-        ).filter { it in photos.indices }
-
+    // Preload telemetry for photos
+    LaunchedEffect(photos) {
         withContext(Dispatchers.IO) {
-            for (idx in indicesToLoad) {
-                val u = photos[idx].uri
-                if (!telemetryCache.containsKey(u)) {
+            for (p in photos) {
+                if (!telemetryCache.containsKey(p.uri)) {
                     try {
-                        val stream = if (u.scheme == "file") {
-                            u.path?.let { java.io.FileInputStream(it) }
+                        val stream = if (p.uri.scheme == "file") {
+                            p.uri.path?.let { java.io.FileInputStream(it) }
                         } else {
-                            context.contentResolver.openInputStream(u)
+                            context.contentResolver.openInputStream(p.uri)
                         }
                         stream?.use {
-                            telemetryCache[u] = ExifTelemetryHelper.readTelemetryFromInputStream(it)
+                            telemetryCache[p.uri] = ExifTelemetryHelper.readTelemetryFromInputStream(it)
                         }
                     } catch (e: Exception) {
-                        telemetryCache[u] = null
+                        telemetryCache[p.uri] = null
                     }
                 }
             }
@@ -247,7 +274,8 @@ fun GalleryViewerScreen(
     val isCurrentPhotoBurned = currentPhoto?.isBurned == true || currentTelemetry?.isBurned == true
 
     Box(modifier = modifier.fillMaxSize().background(Color.Black)) {
-        // 1. Horizontal Swipeable Photo Pager (with smooth swiping and beyond-viewport caching)
+        if (!isMultiSelectMode) {
+            // 1. Horizontal Swipeable Photo Pager (with smooth swiping and beyond-viewport caching)
         HorizontalPager(
             state = pagerState,
             key = { page -> photos.getOrNull(page)?.id ?: page },
@@ -462,6 +490,26 @@ fun GalleryViewerScreen(
                         }
                     }
 
+                    // Multi-Select Grid Button
+                    IconButton(
+                        onClick = {
+                            isMultiSelectMode = true
+                            if (currentPhoto != null && !selectedPhotos.contains(currentPhoto)) {
+                                selectedPhotos.add(currentPhoto)
+                            }
+                        },
+                        modifier = Modifier
+                            .background(HudTranslucentDark, CircleShape)
+                            .border(1.dp, HudBorderCyan, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.GridView,
+                            contentDescription = "Multi-Select Grid",
+                            tint = HudCyan,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
                     // Tools / Export dropdown
                     Box {
                         IconButton(
@@ -483,6 +531,19 @@ fun GalleryViewerScreen(
                             onDismissRequest = { showExportMenu = false },
                             modifier = Modifier.background(Slate800)
                         ) {
+                            // Multi-Select / Batch Actions Option
+                            DropdownMenuItem(
+                                text = { Text("Multi-Select / Batch Actions", color = Color.White) },
+                                leadingIcon = { Icon(Icons.Default.Checklist, contentDescription = null, tint = HudCyan) },
+                                onClick = {
+                                    showExportMenu = false
+                                    isMultiSelectMode = true
+                                    if (currentPhoto != null && !selectedPhotos.contains(currentPhoto)) {
+                                        selectedPhotos.add(currentPhoto)
+                                    }
+                                }
+                            )
+
                             // Field User Guide Option
                             DropdownMenuItem(
                                 text = { Text("Field User Guide", color = Color.White) },
@@ -723,92 +784,6 @@ fun GalleryViewerScreen(
             }
         }
 
-        // Delete Confirmation Dialog
-        if (showDeleteConfirmation && currentPhoto != null) {
-            val photoToDelete = currentPhoto
-            val isVideo = photoToDelete.isVideo
-            AlertDialog(
-                onDismissRequest = { showDeleteConfirmation = false },
-                containerColor = Slate800,
-                titleContentColor = Color.White,
-                textContentColor = Color(0xFFCCCCCC),
-                shape = RoundedCornerShape(16.dp),
-                title = {
-                    Text(
-                        text = if (isVideo) "DELETE VIDEO" else "DELETE PHOTO",
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = Color(0xFFEF4444)
-                    )
-                },
-                text = {
-                    Text(
-                        text = if (isVideo) "Are you sure you want to permanently delete this telemetry video and its companion files?"
-                        else "Are you sure you want to permanently delete this telemetry photo?",
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 13.sp,
-                        color = Color.White
-                    )
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            showDeleteConfirmation = false
-                            coroutineScope.launch {
-                                val result = galleryRepository.deletePhoto(photoToDelete.uri)
-                                when (result) {
-                                    is DeleteResult.Success -> {
-                                        photos = photos.filter { it.id != photoToDelete.id }
-                                        Toast.makeText(context, if (isVideo) "Video deleted" else "Photo deleted", Toast.LENGTH_SHORT).show()
-                                        if (photos.isEmpty()) {
-                                            onBack()
-                                        }
-                                    }
-                                    is DeleteResult.RequiresPermission -> {
-                                        pendingDeletePhoto = photoToDelete
-                                        deletePermissionLauncher.launch(
-                                            IntentSenderRequest.Builder(result.intentSender).build()
-                                        )
-                                    }
-                                    is DeleteResult.Failed -> {
-                                        Toast.makeText(context, "Failed to delete item", Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFDC2626),
-                            contentColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(
-                            text = "DELETE",
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                },
-                dismissButton = {
-                    OutlinedButton(
-                        onClick = { showDeleteConfirmation = false },
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = HudCyan
-                        ),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, HudBorderCyan),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(
-                            text = "CANCEL",
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            )
-        }
-
         // 5. Bottom Action Bar:
         // For Videos -> "OPEN IN VIDEO PLAYER"
         // For Photos -> "BURN & SAVE WATERMARKED COPY"
@@ -901,6 +876,588 @@ fun GalleryViewerScreen(
                     )
                 }
             }
+        }
+        } else {
+            // ================= MULTI-SELECT GRID MODE =================
+            val statusBarTopPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+            val navBarBottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                contentPadding = PaddingValues(
+                    start = 6.dp,
+                    top = statusBarTopPadding + 76.dp,
+                    end = 6.dp,
+                    bottom = navBarBottomPadding + 96.dp
+                ),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(photos, key = { it.id }) { photo ->
+                    val isSelected = selectedPhotos.any { it.id == photo.id }
+                    val telemetry = telemetryCache[photo.uri]
+                    val hasGps = telemetry?.latitude != null && telemetry?.longitude != null
+
+                    Box(
+                        modifier = Modifier
+                            .aspectRatio(1f)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Slate800)
+                            .border(
+                                width = if (isSelected) 2.5.dp else 1.dp,
+                                color = if (isSelected) HudCyan else Slate700,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .clickable {
+                                if (isSelected) {
+                                    selectedPhotos.removeAll { it.id == photo.id }
+                                } else {
+                                    selectedPhotos.add(photo)
+                                }
+                            }
+                    ) {
+                        AsyncImage(
+                            model = photo.uri,
+                            contentDescription = photo.displayName,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+
+                        if (isSelected) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(HudCyan.copy(alpha = 0.3f))
+                            )
+                        }
+
+                        // Top-right selection circle
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(4.dp)
+                        ) {
+                            if (isSelected) {
+                                Icon(
+                                    imageVector = Icons.Default.CheckCircle,
+                                    contentDescription = "Selected",
+                                    tint = HudCyan,
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .background(Color.Black.copy(alpha = 0.6f), CircleShape)
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.RadioButtonUnchecked,
+                                    contentDescription = "Not selected",
+                                    tint = Color.White.copy(alpha = 0.7f),
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .background(Color.Black.copy(alpha = 0.3f), CircleShape)
+                                )
+                            }
+                        }
+
+                        // Bottom badges (Video or GPS)
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .padding(4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            if (photo.isVideo) {
+                                Box(
+                                    modifier = Modifier
+                                        .background(Color.Black.copy(alpha = 0.75f), RoundedCornerShape(4.dp))
+                                        .border(0.5.dp, HudCyan, RoundedCornerShape(4.dp))
+                                        .padding(horizontal = 4.dp, vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = "VIDEO",
+                                        color = HudCyan,
+                                        fontSize = 9.sp,
+                                        fontFamily = FontFamily.Monospace,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            } else if (hasGps) {
+                                Box(
+                                    modifier = Modifier
+                                        .background(Color.Black.copy(alpha = 0.75f), RoundedCornerShape(4.dp))
+                                        .border(0.5.dp, HudGreen, RoundedCornerShape(4.dp))
+                                        .padding(horizontal = 4.dp, vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = "GPS",
+                                        color = HudGreen,
+                                        fontSize = 9.sp,
+                                        fontFamily = FontFamily.Monospace,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Top Bar in Multi-Select Mode
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(top = 8.dp, start = 16.dp, end = 16.dp)
+                    .align(Alignment.TopCenter),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Exit button
+                IconButton(
+                    onClick = {
+                        isMultiSelectMode = false
+                        selectedPhotos.clear()
+                    },
+                    modifier = Modifier
+                        .background(HudTranslucentDark, CircleShape)
+                        .border(1.dp, HudBorderCyan, CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Exit Selection",
+                        tint = Color.White
+                    )
+                }
+
+                // Selection Counter Badge
+                Box(
+                    modifier = Modifier
+                        .background(HudTranslucentDark, RoundedCornerShape(12.dp))
+                        .border(1.dp, HudBorderCyan, RoundedCornerShape(12.dp))
+                        .padding(horizontal = 14.dp, vertical = 6.dp)
+                ) {
+                    Text(
+                        text = "${selectedPhotos.size} / ${photos.size} SELECTED",
+                        color = if (selectedPhotos.isNotEmpty()) HudCyan else Color.White,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp
+                    )
+                }
+
+                // Right buttons: Select All / Deselect All + Switch to Pager
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = {
+                            if (selectedPhotos.size == photos.size) {
+                                selectedPhotos.clear()
+                            } else {
+                                selectedPhotos.clear()
+                                selectedPhotos.addAll(photos)
+                            }
+                        },
+                        modifier = Modifier
+                            .background(HudTranslucentDark, CircleShape)
+                            .border(1.dp, HudBorderCyan, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = if (selectedPhotos.size == photos.size) Icons.Default.Deselect else Icons.Default.SelectAll,
+                            contentDescription = if (selectedPhotos.size == photos.size) "Deselect All" else "Select All",
+                            tint = HudCyan,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { isMultiSelectMode = false },
+                        modifier = Modifier
+                            .background(HudTranslucentDark, CircleShape)
+                            .border(1.dp, HudBorderCyan, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ViewCarousel,
+                            contentDescription = "View Photos",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+
+            // Bottom Action Bar in Multi-Select Mode
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .navigationBarsPadding(),
+                color = HudTranslucentDark,
+                border = androidx.compose.foundation.BorderStroke(1.dp, HudBorderCyan),
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val validKmzItems = selectedPhotos.mapNotNull { p ->
+                        if (p.isVideo) return@mapNotNull null
+                        val t = telemetryCache[p.uri]
+                        if (t != null && t.latitude != null && t.longitude != null) {
+                            KmzExportItem(displayName = p.displayName, photoUri = p.uri, telemetry = t)
+                        } else null
+                    }
+
+                    // 1. Export KMZ
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.clickable(enabled = validKmzItems.isNotEmpty()) {
+                            coroutineScope.launch {
+                                val savedUri = GisExportHelper.exportKmz(context, validKmzItems)
+                                if (savedUri != null) {
+                                    val viewIntent = Intent(Intent.ACTION_VIEW).apply {
+                                        setDataAndType(savedUri, "application/vnd.google-earth.kmz")
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    }
+                                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                        type = "application/vnd.google-earth.kmz"
+                                        putExtra(Intent.EXTRA_STREAM, savedUri)
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    }
+                                    val chooser = Intent.createChooser(viewIntent, "Open or Share Google Earth KMZ").apply {
+                                        putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(shareIntent))
+                                    }
+                                    context.startActivity(chooser)
+                                } else {
+                                    Toast.makeText(context, "Failed to create KMZ bundle", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Layers,
+                            contentDescription = "Export KMZ",
+                            tint = if (validKmzItems.isNotEmpty()) HudCyan else Color.DarkGray,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "KMZ (${validKmzItems.size})",
+                            color = if (validKmzItems.isNotEmpty()) Color.White else Color.DarkGray,
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    // 2. Export KML / GPX (GIS Menu)
+                    var showBatchGisMenu by remember { mutableStateOf(false) }
+                    Box {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.clickable(enabled = validKmzItems.isNotEmpty()) {
+                                showBatchGisMenu = true
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Public,
+                                contentDescription = "GIS",
+                                tint = if (validKmzItems.isNotEmpty()) HudCyan else Color.DarkGray,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "GIS",
+                                color = if (validKmzItems.isNotEmpty()) Color.White else Color.DarkGray,
+                                fontSize = 11.sp,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = showBatchGisMenu,
+                            onDismissRequest = { showBatchGisMenu = false },
+                            modifier = Modifier.background(Slate800)
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Export Survey KML (${validKmzItems.size})", color = Color.White) },
+                                leadingIcon = { Icon(Icons.Default.Public, null, tint = HudCyan) },
+                                onClick = {
+                                    showBatchGisMenu = false
+                                    coroutineScope.launch {
+                                        val items = validKmzItems.map { Pair(it.displayName, it.telemetry) }
+                                        val savedUri = GisExportHelper.exportKml(context, items)
+                                        if (savedUri != null) {
+                                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                                type = "application/vnd.google-earth.kml+xml"
+                                                putExtra(Intent.EXTRA_STREAM, savedUri)
+                                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                            }
+                                            context.startActivity(Intent.createChooser(shareIntent, "Share Survey KML"))
+                                        }
+                                    }
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Export Survey GPX (${validKmzItems.size})", color = Color.White) },
+                                leadingIcon = { Icon(Icons.Default.Navigation, null, tint = HudCyan) },
+                                onClick = {
+                                    showBatchGisMenu = false
+                                    coroutineScope.launch {
+                                        val items = validKmzItems.map { Pair(it.displayName, it.telemetry) }
+                                        val savedUri = GisExportHelper.exportGpx(context, items)
+                                        if (savedUri != null) {
+                                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                                type = "application/gpx+xml"
+                                                putExtra(Intent.EXTRA_STREAM, savedUri)
+                                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                            }
+                                            context.startActivity(Intent.createChooser(shareIntent, "Share Survey GPX"))
+                                        }
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    // 3. Share Selected
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.clickable(enabled = selectedPhotos.isNotEmpty()) {
+                            val uris = ArrayList(selectedPhotos.map { it.uri })
+                            if (uris.size == 1) {
+                                val p = selectedPhotos.first()
+                                val intent = Intent(Intent.ACTION_SEND).apply {
+                                    type = if (p.isVideo) "video/mp4" else "image/jpeg"
+                                    putExtra(Intent.EXTRA_STREAM, p.uri)
+                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+                                context.startActivity(Intent.createChooser(intent, "Share item"))
+                            } else if (uris.size > 1) {
+                                val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                                    type = "*/*"
+                                    putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
+                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+                                context.startActivity(Intent.createChooser(intent, "Share ${uris.size} items"))
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = "Share",
+                            tint = if (selectedPhotos.isNotEmpty()) Color.White else Color.DarkGray,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "SHARE",
+                            color = if (selectedPhotos.isNotEmpty()) Color.White else Color.DarkGray,
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    // 4. Delete Selected
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.clickable(enabled = selectedPhotos.isNotEmpty()) {
+                            showBatchDeleteConfirmation = true
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete",
+                            tint = if (selectedPhotos.isNotEmpty()) Color.Red else Color.DarkGray,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "DELETE",
+                            color = if (selectedPhotos.isNotEmpty()) Color.Red else Color.DarkGray,
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+        }
+
+        // Single Photo Delete Confirmation Dialog
+        if (showDeleteConfirmation && currentPhoto != null) {
+            val photoToDelete = currentPhoto
+            val isVideo = photoToDelete.isVideo
+            AlertDialog(
+                onDismissRequest = { showDeleteConfirmation = false },
+                containerColor = Slate800,
+                titleContentColor = Color.White,
+                textContentColor = Color(0xFFCCCCCC),
+                shape = RoundedCornerShape(16.dp),
+                title = {
+                    Text(
+                        text = if (isVideo) "DELETE VIDEO" else "DELETE PHOTO",
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = Color(0xFFEF4444)
+                    )
+                },
+                text = {
+                    Text(
+                        text = if (isVideo) "Are you sure you want to permanently delete this telemetry video and its companion files?"
+                        else "Are you sure you want to permanently delete this telemetry photo?",
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 13.sp,
+                        color = Color.White
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showDeleteConfirmation = false
+                            coroutineScope.launch {
+                                val result = galleryRepository.deletePhoto(photoToDelete.uri)
+                                when (result) {
+                                    is DeleteResult.Success -> {
+                                        photos = photos.filter { it.id != photoToDelete.id }
+                                        Toast.makeText(context, if (isVideo) "Video deleted" else "Photo deleted", Toast.LENGTH_SHORT).show()
+                                        if (photos.isEmpty()) {
+                                            onBack()
+                                        }
+                                    }
+                                    is DeleteResult.RequiresPermission -> {
+                                        pendingDeletePhoto = photoToDelete
+                                        deletePermissionLauncher.launch(
+                                            IntentSenderRequest.Builder(result.intentSender).build()
+                                        )
+                                    }
+                                    is DeleteResult.Failed -> {
+                                        Toast.makeText(context, "Failed to delete item", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFDC2626),
+                            contentColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = "DELETE",
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                },
+                dismissButton = {
+                    OutlinedButton(
+                        onClick = { showDeleteConfirmation = false },
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = HudCyan
+                        ),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, HudBorderCyan),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = "CANCEL",
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            )
+        }
+
+        // Batch Delete Confirmation Dialog
+        if (showBatchDeleteConfirmation && selectedPhotos.isNotEmpty()) {
+            val count = selectedPhotos.size
+            AlertDialog(
+                onDismissRequest = { showBatchDeleteConfirmation = false },
+                containerColor = Slate800,
+                titleContentColor = Color.White,
+                textContentColor = Color(0xFFCCCCCC),
+                shape = RoundedCornerShape(16.dp),
+                title = {
+                    Text(
+                        text = "DELETE $count ITEMS",
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = Color(0xFFEF4444)
+                    )
+                },
+                text = {
+                    Text(
+                        text = "Are you sure you want to permanently delete $count selected telemetry items and companion files?",
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 13.sp,
+                        color = Color.White
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showBatchDeleteConfirmation = false
+                            val toDelete = selectedPhotos.toList()
+                            coroutineScope.launch {
+                                val result = galleryRepository.deletePhotos(toDelete.map { it.uri })
+                                when (result) {
+                                    is DeleteResult.Success -> {
+                                        val deletedIds = toDelete.map { it.id }.toSet()
+                                        photos = photos.filter { it.id !in deletedIds }
+                                        selectedPhotos.clear()
+                                        Toast.makeText(context, "$count item(s) deleted", Toast.LENGTH_SHORT).show()
+                                        if (photos.isEmpty()) {
+                                            onBack()
+                                        }
+                                    }
+                                    is DeleteResult.RequiresPermission -> {
+                                        pendingDeletePhotos = toDelete
+                                        deletePermissionLauncher.launch(
+                                            IntentSenderRequest.Builder(result.intentSender).build()
+                                        )
+                                    }
+                                    is DeleteResult.Failed -> {
+                                        Toast.makeText(context, "Failed to delete selected items", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFDC2626),
+                            contentColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = "DELETE ALL ($count)",
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                },
+                dismissButton = {
+                    OutlinedButton(
+                        onClick = { showBatchDeleteConfirmation = false },
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = HudCyan
+                        ),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, HudBorderCyan),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = "CANCEL",
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            )
         }
     }
 }

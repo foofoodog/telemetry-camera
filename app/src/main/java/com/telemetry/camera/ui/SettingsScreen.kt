@@ -77,7 +77,6 @@ fun SettingsScreen(
     LaunchedEffect(activeTargetSetting, sectionPositions.size) {
         activeTargetSetting?.let { target ->
             val targetKey = when (target) {
-                "hud_overlay", "burn_in", "watermark_badge" -> "general_controls"
                 "declination", "ephemeris", "angular_grid" -> "field_survey"
                 else -> target
             }
@@ -165,39 +164,7 @@ fun SettingsScreen(
                     },
                 verticalArrangement = Arrangement.spacedBy(18.dp)
             ) {
-                // Section 1: HUD & Burn Master Switches
-                SettingsCard(
-                    title = "GENERAL CONTROLS",
-                    isHighlighted = highlightedKey == "general_controls",
-                    modifier = cardPositionModifier("general_controls")
-                ) {
-                    SettingsSwitchRow(
-                        title = "HUD Overlay",
-                        subtitle = "Display live HUD telemetry on screen",
-                        checked = settings.isHudEnabled,
-                        onCheckedChange = { onSettingsChanged(settings.copy(isHudEnabled = it)) }
-                    )
-
-                    HorizontalDivider(color = Slate700, modifier = Modifier.padding(vertical = 8.dp))
-
-                    SettingsSwitchRow(
-                        title = "Burn-in by Default",
-                        subtitle = "Stamp telemetry overlay permanently onto photo pixels",
-                        checked = settings.isBurnOverlayEnabled,
-                        onCheckedChange = { onSettingsChanged(settings.copy(isBurnOverlayEnabled = it)) }
-                    )
-
-                    HorizontalDivider(color = Slate700, modifier = Modifier.padding(vertical = 8.dp))
-
-                    SettingsSwitchRow(
-                        title = "App Watermark Badge",
-                        subtitle = "Stamp a subtle '⌖ TELEMETRY' badge on photos to identify metadata-compatible images in other apps",
-                        checked = settings.showWatermarkBadge,
-                        onCheckedChange = { onSettingsChanged(settings.copy(showWatermarkBadge = it)) }
-                    )
-                }
-
-                // Section 2: HUD Display Size (Small, Medium, Large)
+                // Section 1: HUD Display Size (Small, Medium, Large)
                 SettingsCard(
                     title = "HUD DISPLAY SIZE",
                     isHighlighted = highlightedKey == "display_size",
@@ -314,15 +281,15 @@ fun SettingsScreen(
                     }
                 }
 
-                // Section 7: Reticle & Horizon Level
+                // Section 6: Artificial Horizon & Level
                 SettingsCard(
-                    title = "RETICLE & HORIZON LEVEL",
+                    title = "ARTIFICIAL HORIZON & LEVELING",
                     isHighlighted = highlightedKey == "reticle_horizon",
                     modifier = cardPositionModifier("reticle_horizon")
                 ) {
                     SettingsSwitchRow(
-                        title = "Horizon Reticle & Wings",
-                        subtitle = "Show center crosshair and horizon leveling lines",
+                        title = "Artificial Horizon Widget",
+                        subtitle = "Display center attitude indicator, dynamic pitch ladder, and bank angle arc",
                         checked = settings.showHorizonReticle,
                         onCheckedChange = { onSettingsChanged(settings.copy(showHorizonReticle = it)) }
                     )

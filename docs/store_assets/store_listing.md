@@ -26,76 +26,56 @@ Tactical optical HUD camera with GPS, attitude, 3D Google Earth KMZ & ephemeris.
 
 ---
 
-### Full Description (Play Store clean plain text)
+### Full Description (Play Store HTML / Console Format)
 
-```
-Telemetry Camera is a professional optical survey and field camera featuring a real-time avionics Heads-Up Display (HUD) projected over the live viewfinder. Built for surveyors, engineers, first responders, inspectors, and outdoor enthusiasts, Telemetry Camera combines precision hardware sensor fusion with non-destructive metadata preservation.
+*Formatted specifically using Google Play Console supported tags (`<b>`, `•`, `<br />`, raw URLs, all-caps bold headers, zero emojis).*
+*Total characters: 3,503 / 4,000*
 
-Every photo preserves 100% of raw sensor metrics inside standard EXIF tags, structured companion JSON sidecars, and Google Earth 3D KMZ bundles—ready for archival verification and GIS analysis.
+```html
+Telemetry Camera is a professional optical survey and field camera featuring a real-time avionics Heads-Up Display (HUD) projected over the live viewfinder. Built for surveyors, engineers, first responders, inspectors, and outdoor enthusiasts, Telemetry Camera combines precision hardware sensor fusion with non-destructive metadata preservation.<br /><br />
 
-KEY CAPABILITIES
+Every photo preserves 100% of raw sensor metrics inside standard EXIF tags, structured companion JSON sidecars, and Google Earth 3D KMZ bundles—ready for archival verification and GIS analysis.<br /><br />
 
-REAL-TIME AVIONICS HUD
+<b>KEY CAPABILITIES</b><br /><br />
 
-• Artificial Horizon & Pitch Ladder: Real-time elevation and roll indicators with dynamic leveling.
+<b>REAL-TIME AVIONICS HUD</b><br />
+• <b>Artificial Horizon & Pitch Ladder:</b> Real-time elevation and roll indicators with dynamic leveling.<br />
+• <b>Center Reticle & Ranging Grid:</b> Milliradian and degree graduations for distance and height estimation.<br />
+• <b>Top Telemetry Banner:</b> Microsecond-accurate UTC/local timestamp, barometric altitude, GNSS accuracy, and air pressure.<br />
+• <b>Cockpit Dashboard:</b> Ground speed, track bearing, heading, elevation angle, and lateral tilt.<br />
+• <b>One-Tap HUD Toggle:</b> Quickly reveal or collapse the live HUD overlay.<br /><br />
 
-• Center Reticle & Ranging Grid: Milliradian and degree graduations for distance and height estimation.
+<b>TRUE NORTH GEOMAGNETIC SURVEYING</b><br />
+• <b>NOAA Declination:</b> Calculates local magnetic declination via the World Magnetic Model (WMM).<br />
+• <b>Dual North Reference:</b> Switch seamlessly between True Geographic North and Magnetic North.<br />
+• <b>Multi-Mode Compass:</b> Degrees & Cardinal, Degrees Only, Cardinal Only, or Hidden.<br /><br />
 
-• Top Telemetry Banner: Microsecond-accurate UTC/local timestamp, barometric altitude, GNSS accuracy, and air pressure.
+<b>GOOGLE EARTH 3D KMZ & GIS EXPORTS</b><br />
+• <b>Standalone KMZ Survey Bundles:</b> Package surveys into a single .KMZ file with full-res photos, interactive HTML popups, and 3D camera viewports that reorient Google Earth to your exact physical viewpoint, pitch, and heading.<br />
+• <b>Lightweight KML & GPX:</b> Export clean placemarks and Garmin-compatible GPX 1.1 waypoints for QGIS, ArcGIS, and Gaia GPS.<br />
+• <b>Companion JSON:</b> Export 35+ precision telemetry metrics per photo.<br /><br />
 
-• Cockpit Dashboard: Ground speed, track bearing, heading, elevation angle, and lateral tilt.
+<b>SOLAR & LUNAR EPHEMERIS</b><br />
+• <b>Astronomical Tracking:</b> Real-time azimuth and elevation tracking for the Sun and Moon.<br />
+• <b>Sky Reticle Markers:</b> Visual indicators appear directly in the sky reticle when pointing toward the Sun or Moon.<br /><br />
 
-• One-Tap HUD Toggle: Quickly reveal or collapse the live HUD overlay.
+<b>SYNCHRONIZED VIDEO RECORDING (.SRT)</b><br />
+• <b>HD Video Capture:</b> Continuous CameraX sensor logging.<br />
+• <b>Companion Subtitles:</b> Synchronized per-second .SRT subtitle files tracking heading, pitch, roll, altitude, speed, and GPS coordinates during playback in VLC.<br /><br />
 
-TRUE NORTH GEOMAGNETIC SURVEYING
+<b>BUILT-IN OFFLINE FIELD MANUAL</b><br />
+• <b>100% Offline Guide:</b> Digital phototheodolite manual with 11 field use cases (triangulation, telecom, solar, forestry, marine, disaster response).<br />
+• <b>Searchable Glossary:</b> Instant search across sensors, HUD metrics, and formulas with one-tap deep links to settings.<br /><br />
 
-• NOAA Declination: Calculates local magnetic declination via the World Magnetic Model (WMM).
+<b>PRIVACY FIRST & 100% ON-DEVICE</b><br />
+• <b>100% Offline:</b> All sensor fusion and camera frames remain strictly on your physical device.<br />
+• <b>Zero Analytics:</b> No trackers, no analytics SDKs, and no cloud uploads.<br />
+• <b>Ad-Free:</b> No banner ads, no popups, and no paywalls.<br /><br />
 
-• Dual North Reference: Switch seamlessly between True Geographic North and Magnetic North.
-
-• Multi-Mode Compass: Degrees & Cardinal, Degrees Only, Cardinal Only, or Hidden.
-
-GOOGLE EARTH 3D KMZ & GIS EXPORTS
-
-• Standalone KMZ Survey Bundles: Package entire surveys into a single .KMZ file with full-res photos, interactive HTML popups, and 3D camera viewports that reorient Google Earth to your exact physical viewpoint, pitch, and heading.
-
-• Lightweight KML & GPX: Export clean placemarks and Garmin-compatible GPX 1.1 waypoints for QGIS, ArcGIS, and Gaia GPS.
-
-• Companion JSON: Export 35+ precision telemetry metrics per photo.
-
-SOLAR & LUNAR EPHEMERIS
-
-• Astronomical Tracking: Real-time azimuth and elevation tracking for the Sun and Moon.
-
-• Sky Reticle Markers: Visual indicators appear directly in the sky reticle when pointing toward the Sun or Moon.
-
-SYNCHRONIZED VIDEO RECORDING (.SRT)
-
-• HD Video Capture: Continuous CameraX sensor logging.
-
-• Companion Subtitles: Synchronized per-second .SRT subtitle files tracking heading, pitch, roll, altitude, speed, and GPS coordinates during playback in VLC.
-
-BUILT-IN OFFLINE FIELD MANUAL
-
-• 100% Offline Guide: Digital phototheodolite manual with 11 field use cases (triangulation, telecom, solar, forestry, marine, disaster response).
-
-• Searchable Glossary: Instant search across sensors, HUD metrics, and formulas with one-tap deep links to settings.
-
-PRIVACY FIRST & 100% ON-DEVICE
-
-• 100% Offline: All sensor fusion and camera frames remain strictly on your physical device.
-
-• Zero Analytics: No trackers, no analytics SDKs, and no cloud uploads.
-
-• Ad-Free: No banner ads, no popups, and no paywalls.
-
-PERMISSIONS
-
-• Camera: Viewfinder preview and image capture.
-
-• Location: Coordinates, altitude, heading, and declination.
-
-• Microphone: Audio capture during video recording.
+<b>PERMISSIONS</b><br />
+• <b>Camera:</b> Viewfinder preview and image capture.<br />
+• <b>Location:</b> Coordinates, altitude, heading, and declination.<br />
+• <b>Microphone:</b> Audio capture during video recording.
 ```
 
 ---

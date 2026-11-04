@@ -53,7 +53,7 @@ data class AppSettings(
     val showTemperature: Boolean = true,
     val showSpeed: Boolean = true,
     val showTrackBearing: Boolean = true,
-    val showWatermarkBadge: Boolean = true,
+    val showWatermarkBadge: Boolean = false,
     val showSunMoonEphemeris: Boolean = true,
     val showAngularRangingGrid: Boolean = true,
     val rangingGridColor: Long = 0xFFF59E0BL,
@@ -116,7 +116,7 @@ class SettingsManager(context: Context) {
         val speedBearingFallback = prefs.getBoolean(KEY_SHOW_SPEED_BEARING, true)
         val showSpeed = prefs.getBoolean(KEY_SHOW_SPEED, speedBearingFallback)
         val showTrack = prefs.getBoolean(KEY_SHOW_TRACK_BEARING, speedBearingFallback)
-        val showWatermarkBadge = prefs.getBoolean(KEY_SHOW_WATERMARK_BADGE, true)
+        val showWatermarkBadge = prefs.getBoolean(KEY_SHOW_WATERMARK_BADGE, false)
         val showEphemeris = prefs.getBoolean(KEY_SHOW_EPHEMERIS, true)
         val showAngularGrid = prefs.getBoolean(KEY_SHOW_ANGULAR_GRID, true)
 
@@ -196,7 +196,7 @@ class SettingsManager(context: Context) {
         private const val KEY_SHOW_SPEED = "key_show_speed"
         private const val KEY_SHOW_TRACK_BEARING = "key_show_track_bearing"
         private const val KEY_SHOW_SPEED_BEARING = "key_show_speed_bearing"
-        private const val KEY_SHOW_WATERMARK_BADGE = "key_show_watermark_badge"
+        private const val KEY_SHOW_WATERMARK_BADGE = "key_show_watermark_badge_v2"
         private const val KEY_SHOW_EPHEMERIS = "key_show_ephemeris"
         private const val KEY_SHOW_ANGULAR_GRID = "key_show_angular_grid"
         private const val KEY_RANGING_GRID_COLOR = "key_ranging_grid_color"

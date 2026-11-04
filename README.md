@@ -29,7 +29,7 @@ We are actively seeking field testers! You can join the testing track and instal
 * **Optical Line-of-Sight Elevation (Pitch)**: True inclination angle of the camera lens from ground (-90°) to zenith (+90°), calibrated to the optical center.
 * **Compass Heading / Azimuth**: Precision heading (0°–359°) with 16-point cardinal direction formatting (e.g., `293° WNW`).
 * **Horizon Tilt / Roll Angle**: Real-time roll indicator (`ROLL: +0.3°`) for accurate camera leveling.
-* **Artificial Horizon Reticle**: Aircraft-style crosshair reticle with pitch ladder and horizon reference wings.
+* **Artificial Horizon Instrument**: Primary flight display (PFD) avionics instrument featuring a dynamic pitch ladder with 10° rungs and 5° graduation bars, roll-stabilized 0° horizon line, top bank angle arc (-60° to +60°) with roll pointer, and center aircraft waterline boresight (`──┐ • ┌──`) with automatic green leveling highlight.
 
 ### 2. Environmental & Atmospheric Sensing
 * **Barometric Air Pressure**: Live atmospheric pressure displayed in inches of mercury (`inHg`) or hectopascals (`hPa`) via the device's onboard barometer sensor.
@@ -54,13 +54,13 @@ We are actively seeking field testers! You can join the testing track and instal
 * **Auto-Collapsing Cards**: When individual metrics are toggled off in settings, card layouts dynamically adjust and cleanly auto-collapse when all contained items are disabled.
 
 ### 5. Flexible Capture Modes & Watermarks
-* **Clean Capture with 100% Embedded Metadata (Default)**: Keeps the image pixels completely pristine while embedding 100% of the raw telemetry inside the image EXIF and JSON metadata.
-* **Burn-in Telemetry**: Permanently stamps the cyber-cyan HUD banners, artificial horizon reticle, and footer cockpit onto the photo pixels at full sensor resolution.
-* **App Identification Watermark Badge (`⌖ TELEMETRY`)**: An optional subtle, sleek corner badge stamped on captured photos to identify telemetry-supported photos at a glance in third-party gallery apps.
+* **Clean Capture with 100% Embedded Metadata (Default)**: Fast, non-blocking zero-lag shutter saves pristine original photos instantly while embedding 100% of raw sensor telemetry inside standard EXIF and structured JSON metadata.
+* **On-Demand Burn-in Copies**: Generate burned-in duplicate photos directly from the gallery at any time, permanently stamping cyber-cyan HUD banners, avionics artificial horizon instrument, and cockpit telemetry cards onto photo pixels at full sensor resolution.
+* **Watermark Badge**: Burned copies include a sleek `⌖ TELEMETRY` corner badge to quickly identify telemetry photos in external photo viewers.
 
 ### 6. Interactive Telemetry Gallery Viewer
 * **Horizontal Swipe Pager**: Smoothly swipe between captured photos with smooth page transitions and beyond-viewport caching.
-* **Independent Metadata HUD Toggle**: View the exact recorded telemetry overlay on clean photos at any time via the top toolbar **Layers** button—even if the live HUD was turned off during capture.
+* **Matching HUD Toggle (`Layers` icon)**: Seamlessly toggle the telemetry overlay on both the live camera viewfinder and in the gallery viewer via the unified Layers icon button.
 * **Burn & Save Copy**: Tap the burn icon in the gallery to generate and save a burned-overlay copy from a clean photo at any time.
 * **EXIF Metadata Inspector**: Built-in bottom sheet displays every raw metric, coordinate, date/time, and sensor reading stored in the photo.
 * **Safe Deletion**: Built-in delete confirmation dialog to prevent accidental removal of field photos.

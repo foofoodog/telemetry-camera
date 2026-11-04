@@ -231,4 +231,47 @@ class GalleryRepository(private val context: Context) {
 
         DeleteResult.Failed
     }
+
+    suspend fun deletePhotos(uris: List<Uri>): DeleteResult = withContext(Dispatchers.IO) {
+        if (uris.isEmpty()) return@withContext DeleteResult.Success
+        if (uris.size == 1) return@withContext deletePhoto(uris.first())
+
+        val contentUris = uris.filter { it.scheme == "content" }
+        val fileUris = uris.filter { it.scheme == "file" }
+
+        for (fUri in fileUris) {
+            try {
+                fUri.path?.let { File(it).delete() }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        if (contentUris.isNotEmpty()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                try {
+                    val intentSender = MediaStore.createDeleteRequest(context.contentResolver, contentUris).intentSender
+                    return@withContext DeleteResult.RequiresPermission(intentSender)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        } else {
+            return@withContext DeleteResult.Success
+        }
+
+        // Fallback for older Android: delete individually
+        var anyPermissionNeeded: IntentSender? = null
+        for (uri in contentUris) {
+            val res = deletePhoto(uri)
+            if (res is DeleteResult.RequiresPermission && anyPermissionNeeded == null) {
+                anyPermissionNeeded = res.intentSender
+            }
+        }
+        if (anyPermissionNeeded != null) {
+            DeleteResult.RequiresPermission(anyPermissionNeeded)
+        } else {
+            DeleteResult.Success
+        }
+    }
 }

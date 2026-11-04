@@ -14,14 +14,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.Locale
+import kotlin.math.*
 import com.telemetry.camera.data.AppSettings
 import com.telemetry.camera.data.CompassDisplayMode
 import com.telemetry.camera.data.GpsDisplayMode
@@ -78,10 +87,11 @@ fun HudOverlay(
                 )
             }
 
-            // 2. CENTER RETICLE / PITCH HORIZON LADDER
+            // 2. CENTER RETICLE / ARTIFICIAL HORIZON INSTRUMENT
             if (settings.showHorizonReticle) {
                 CenterReticle(
                     roll = telemetry.rollDegrees,
+                    pitch = telemetry.elevationDegrees,
                     scale = scale,
                     showAngularRangingGrid = settings.showAngularRangingGrid,
                     gridColor = Color(settings.rangingGridColor),
@@ -90,7 +100,7 @@ fun HudOverlay(
                     telemetry = telemetry,
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .size((220 * scale).dp)
+                        .size((280 * scale).dp)
                 )
             }
 
@@ -342,6 +352,7 @@ private fun TopTelemetryCard(
 @Composable
 private fun CenterReticle(
     roll: Float,
+    pitch: Float,
     scale: Float,
     showAngularRangingGrid: Boolean = false,
     gridColor: Color = HudAmber,
@@ -350,67 +361,222 @@ private fun CenterReticle(
     telemetry: TelemetryData? = null,
     modifier: Modifier = Modifier
 ) {
+    val isLevel = abs(pitch) < 0.8f && abs(roll) < 0.8f
+    val boresightColor = if (isLevel) HudGreen else HudAmber
+    val horizonLineColor = if (isLevel) HudGreen else HudCyan
+
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        Canvas(
-            modifier = Modifier
-                .fillMaxSize()
-                .rotate(-roll)
-        ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
             val cx = size.width / 2f
             val cy = size.height / 2f
+            val dialRadius = (105f * scale).dp.toPx()
 
-            // Center target circle
+            // 1. OUTER ATTITUDE DIAL & BANK ANGLE ARC (Fixed to camera frame)
+            // Circular collimator ring (subtle HUD dial boundary)
             drawCircle(
-                color = HudBorderCyan,
-                radius = (24 * scale).dp.toPx(),
-                style = androidx.compose.ui.graphics.drawscope.Stroke(width = (2 * scale).dp.toPx())
+                color = Slate700.copy(alpha = 0.45f),
+                radius = dialRadius,
+                style = Stroke(width = (1f * scale).dp.toPx())
             )
 
-            // Center crosshair dot
+            // Top bank angle arc from -60° to +60° (where 270° is top dead center)
+            drawArc(
+                color = HudBorderCyan.copy(alpha = 0.5f),
+                startAngle = 210f,
+                sweepAngle = 120f,
+                useCenter = false,
+                topLeft = Offset(cx - dialRadius, cy - dialRadius),
+                size = Size(dialRadius * 2f, dialRadius * 2f),
+                style = Stroke(width = (1.5f * scale).dp.toPx())
+            )
+
+            // Bank angle tick marks at 0°, ±10°, ±20°, ±30°, ±45°, ±60°
+            val bankAngles = listOf(-60, -45, -30, -20, -10, 0, 10, 20, 30, 45, 60)
+            for (angle in bankAngles) {
+                val rad = Math.toRadians((270 + angle).toDouble()).toFloat()
+                val isMajor = angle == 0 || abs(angle) == 30 || abs(angle) == 60
+                val tickLen = (if (isMajor) 9f * scale else 5f * scale).dp.toPx()
+                val tickStartX = cx + (dialRadius - tickLen) * cos(rad)
+                val tickStartY = cy + (dialRadius - tickLen) * sin(rad)
+                val tickEndX = cx + dialRadius * cos(rad)
+                val tickEndY = cy + dialRadius * sin(rad)
+                drawLine(
+                    color = if (angle == 0) HudAmber else HudCyan.copy(alpha = 0.6f),
+                    start = Offset(tickStartX, tickStartY),
+                    end = Offset(tickEndX, tickEndY),
+                    strokeWidth = (if (isMajor) 1.5f * scale else 1f * scale).dp.toPx()
+                )
+            }
+
+            // Top dead center 0° zero-roll index mark (inverted triangle)
+            val indexTopY = cy - dialRadius - (3f * scale).dp.toPx()
+            val indexSize = (5f * scale).dp.toPx()
+            val zeroIndexTriangle = Path().apply {
+                moveTo(cx, indexTopY + indexSize)
+                lineTo(cx - indexSize, indexTopY)
+                lineTo(cx + indexSize, indexTopY)
+                close()
+            }
+            drawPath(zeroIndexTriangle, color = if (isLevel) HudGreen else HudAmber)
+
+            // Dynamic Roll Pointer (traverses bank arc with -roll)
+            val rollRad = Math.toRadians((270 - roll).toDouble()).toFloat()
+            val rollPtrDist = dialRadius - (3f * scale).dp.toPx()
+            val ptrTipX = cx + rollPtrDist * cos(rollRad)
+            val ptrTipY = cy + rollPtrDist * sin(rollRad)
+            val ptrBaseRad = (4.5f * scale).dp.toPx()
+            val perpRad = rollRad + (Math.PI / 2).toFloat()
+            val ptrBaseDist = rollPtrDist - (9f * scale).dp.toPx()
+            val ptrBaseCenterX = cx + ptrBaseDist * cos(rollRad)
+            val ptrBaseCenterY = cy + ptrBaseDist * sin(rollRad)
+            val rollPointerPath = Path().apply {
+                moveTo(ptrTipX, ptrTipY)
+                lineTo(ptrBaseCenterX + ptrBaseRad * cos(perpRad), ptrBaseCenterY + ptrBaseRad * sin(perpRad))
+                lineTo(ptrBaseCenterX - ptrBaseRad * cos(perpRad), ptrBaseCenterY - ptrBaseRad * sin(perpRad))
+                close()
+            }
+            drawPath(rollPointerPath, color = if (isLevel) HudGreen else HudCyan)
+
+            // 2. DYNAMIC ARTIFICIAL HORIZON & PITCH LADDER (Clipped inside the dial)
+            val clipDialPath = Path().apply {
+                addOval(Rect(cx - dialRadius + 2f, cy - dialRadius + 2f, cx + dialRadius - 2f, cy + dialRadius - 2f))
+            }
+            clipPath(clipDialPath) {
+                // Rotate with roll angle around center
+                rotate(degrees = -roll, pivot = Offset(cx, cy)) {
+                    val pitchPixelsPerDegree = (3.2f * scale).dp.toPx()
+                    val horizonY = cy + (pitch * pitchPixelsPerDegree)
+
+                    // Dynamic 0° Horizon Line
+                    val horizonWingLen = dialRadius * 0.88f
+                    val horizonGap = (20f * scale).dp.toPx()
+                    val horizonLineWidth = (2.2f * scale).dp.toPx()
+
+                    // Left horizon bar
+                    drawLine(
+                        color = horizonLineColor,
+                        start = Offset(cx - horizonWingLen, horizonY),
+                        end = Offset(cx - horizonGap, horizonY),
+                        strokeWidth = horizonLineWidth,
+                        cap = StrokeCap.Round
+                    )
+                    // Right horizon bar
+                    drawLine(
+                        color = horizonLineColor,
+                        start = Offset(cx + horizonGap, horizonY),
+                        end = Offset(cx + horizonWingLen, horizonY),
+                        strokeWidth = horizonLineWidth,
+                        cap = StrokeCap.Round
+                    )
+
+                    // Pitch Ladder Rungs (+10°, +20°, -10°, -20°, ±5°, ±15°, ±25°)
+                    val rungs = listOf(5, 10, 15, 20, 25, 30, -5, -10, -15, -20, -25, -30)
+
+                    for (deg in rungs) {
+                        val rungY = horizonY - (deg * pitchPixelsPerDegree)
+                        if (abs(rungY - cy) > dialRadius) continue // Outside dial
+
+                        val isMajorRung = deg % 10 == 0
+                        val rungWidth = (if (isMajorRung) 30f * scale else 16f * scale).dp.toPx()
+                        val rungGap = (if (isMajorRung) 24f * scale else 20f * scale).dp.toPx()
+                        val rungStroke = (if (isMajorRung) 2f * scale else 1.6f * scale).dp.toPx()
+                        val rungColor = if (deg > 0) HudCyan.copy(alpha = 0.9f) else HudBorderCyan.copy(alpha = 0.85f)
+
+                        // Left horizontal bar (Solid, crisp line with round caps)
+                        drawLine(
+                            color = rungColor,
+                            start = Offset(cx - rungGap - rungWidth, rungY),
+                            end = Offset(cx - rungGap, rungY),
+                            strokeWidth = rungStroke,
+                            cap = StrokeCap.Round
+                        )
+
+                        // Right horizontal bar (Solid, crisp line with round caps)
+                        drawLine(
+                            color = rungColor,
+                            start = Offset(cx + rungGap, rungY),
+                            end = Offset(cx + rungGap + rungWidth, rungY),
+                            strokeWidth = rungStroke,
+                            cap = StrokeCap.Round
+                        )
+
+                        // For major 10° rungs, draw solid reference tips pointing toward the horizon line
+                        if (isMajorRung) {
+                            val tipLen = (5f * scale).dp.toPx()
+                            val tipDirY = if (deg > 0) tipLen else -tipLen
+
+                            // Left tip at outer edge
+                            drawLine(
+                                color = rungColor,
+                                start = Offset(cx - rungGap - rungWidth, rungY),
+                                end = Offset(cx - rungGap - rungWidth, rungY + tipDirY),
+                                strokeWidth = rungStroke,
+                                cap = StrokeCap.Round
+                            )
+
+                            // Right tip at outer edge
+                            drawLine(
+                                color = rungColor,
+                                start = Offset(cx + rungGap + rungWidth, rungY),
+                                end = Offset(cx + rungGap + rungWidth, rungY + tipDirY),
+                                strokeWidth = rungStroke,
+                                cap = StrokeCap.Round
+                            )
+                        }
+                    }
+                }
+            }
+
+            // 3. FIXED AIRCRAFT WATERLINE / BORESIGHT (Dead Center — fixed to camera body)
+            val centerDotRadius = (3.5f * scale).dp.toPx()
+            val ringRadius = (13f * scale).dp.toPx()
+            val wingGap = (18f * scale).dp.toPx()
+            val wingSpan = (34f * scale).dp.toPx()
+            val wingDrop = (5f * scale).dp.toPx()
+            val waterlineStroke = (2.2f * scale).dp.toPx()
+
+            // Center Boresight Dot
             drawCircle(
-                color = HudAmber,
-                radius = (3 * scale).dp.toPx()
+                color = boresightColor,
+                radius = centerDotRadius
             )
 
-            // Horizon crosshair wings
-            val wingLength = (32 * scale).dp.toPx()
-            val gap = (30 * scale).dp.toPx()
-
-            // Left wing
-            drawLine(
-                color = HudAmber,
-                start = Offset(cx - gap - wingLength, cy),
-                end = Offset(cx - gap, cy),
-                strokeWidth = (2 * scale).dp.toPx(),
-                cap = StrokeCap.Round
+            // Center Optical Ring
+            drawCircle(
+                color = boresightColor.copy(alpha = 0.85f),
+                radius = ringRadius,
+                style = Stroke(width = (1.5f * scale).dp.toPx())
             )
 
-            // Right wing
-            drawLine(
-                color = HudAmber,
-                start = Offset(cx + gap, cy),
-                end = Offset(cx + gap + wingLength, cy),
-                strokeWidth = (2 * scale).dp.toPx(),
-                cap = StrokeCap.Round
-            )
+            // Left aircraft waterline wing:  ──┐
+            val leftWaterline = Path().apply {
+                moveTo(cx - wingGap - wingSpan, cy)
+                lineTo(cx - wingGap, cy)
+                lineTo(cx - wingGap, cy + wingDrop)
+            }
+            drawPath(leftWaterline, color = boresightColor, style = Stroke(width = waterlineStroke, cap = StrokeCap.Round))
+
+            // Right aircraft waterline wing: ┌──
+            val rightWaterline = Path().apply {
+                moveTo(cx + wingGap + wingSpan, cy)
+                lineTo(cx + wingGap, cy)
+                lineTo(cx + wingGap, cy + wingDrop)
+            }
+            drawPath(rightWaterline, color = boresightColor, style = Stroke(width = waterlineStroke, cap = StrokeCap.Round))
 
             // Optional Angular Ranging Grid (mil / degree tick marks)
             if (showAngularRangingGrid) {
                 val tickWidth = (gridThickness * scale).dp.toPx()
                 for (step in 1..3) {
-                    val offset = (step * 20 * scale).dp.toPx()
-                    val tickLen = (if (step % 2 == 0) 8 else 4) * scale + (gridThickness - 1.5f).coerceAtLeast(0f)
-
-                    // Horizontal ticks on wings
-                    drawLine(gridColor, Offset(cx - gap - offset, cy - tickLen), Offset(cx - gap - offset, cy + tickLen), strokeWidth = tickWidth, cap = StrokeCap.Round)
-                    drawLine(gridColor, Offset(cx + gap + offset, cy - tickLen), Offset(cx + gap + offset, cy + tickLen), strokeWidth = tickWidth, cap = StrokeCap.Round)
+                    val offset = (step * 24 * scale).dp.toPx()
+                    val tickLen = (if (step % 2 == 0) 8 * scale else 4 * scale).dp.toPx() + (gridThickness - 1.5f).coerceAtLeast(0f)
 
                     // Vertical ticks above and below reticle
-                    drawLine(gridColor, Offset(cx - tickLen, cy - gap - offset), Offset(cx + tickLen, cy - gap - offset), strokeWidth = tickWidth, cap = StrokeCap.Round)
-                    drawLine(gridColor, Offset(cx - tickLen, cy + gap + offset), Offset(cx + tickLen, cy + gap + offset), strokeWidth = tickWidth, cap = StrokeCap.Round)
+                    drawLine(gridColor, Offset(cx - tickLen, cy - ringRadius - offset), Offset(cx + tickLen, cy - ringRadius - offset), strokeWidth = tickWidth, cap = StrokeCap.Round)
+                    drawLine(gridColor, Offset(cx - tickLen, cy + ringRadius + offset), Offset(cx + tickLen, cy + ringRadius + offset), strokeWidth = tickWidth, cap = StrokeCap.Round)
                 }
             }
         }
@@ -423,7 +589,7 @@ private fun CenterReticle(
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
-                        .offset(y = (-32 * scale).dp)
+                        .offset(y = (-30 * scale).dp)
                         .background(HudTranslucentDark, RoundedCornerShape(4.dp))
                         .border(1.dp, HudAmber.copy(alpha = 0.6f), RoundedCornerShape(4.dp))
                         .padding(horizontal = 6.dp, vertical = 2.dp)

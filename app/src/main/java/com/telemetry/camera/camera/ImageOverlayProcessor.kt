@@ -4,13 +4,17 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.RectF
 import android.graphics.Typeface
 import com.telemetry.camera.data.AppSettings
 import com.telemetry.camera.data.CompassDisplayMode
 import com.telemetry.camera.data.GpsDisplayMode
 import com.telemetry.camera.data.TelemetryData
+import kotlin.math.abs
+import kotlin.math.cos
 import kotlin.math.max
+import kotlin.math.sin
 
 object ImageOverlayProcessor {
 
@@ -156,25 +160,201 @@ object ImageOverlayProcessor {
         }
 
         // ==========================================
-        // 2. CENTER RETICLE & PITCH LADDER
+        // 2. CENTER ARTIFICIAL HORIZON & RETICLE
         // ==========================================
         val centerX = width / 2f
         val centerY = height / 2f
-        val crosshairRadius = 40f * scale
 
         if (settings.showHorizonReticle) {
-            // Center crosshair dot and reticle ring
-            canvas.drawCircle(centerX, centerY, crosshairRadius, borderPaint)
-            canvas.drawCircle(centerX, centerY, 4f * scale, amberTextPaint)
+            val pitch = telemetry.elevationDegrees
+            val roll = telemetry.rollDegrees
+            val isLevel = abs(pitch) < 0.8f && abs(roll) < 0.8f
+            val hudCyan = Color.rgb(6, 182, 212)
+            val hudBorderCyan = Color.argb(128, 6, 182, 212)
+            val hudAmber = Color.rgb(251, 191, 36)
+            val hudGreen = Color.rgb(34, 197, 94)
+            val bezelColor = Color.argb(115, 51, 65, 85)
+            val boresightColor = if (isLevel) hudGreen else hudAmber
+            val horizonLineColor = if (isLevel) hudGreen else hudCyan
 
-            // Crosshair ticks
-            canvas.drawLine(centerX - crosshairRadius - 20f * scale, centerY, centerX - crosshairRadius, centerY, hudLinePaint)
-            canvas.drawLine(centerX + crosshairRadius, centerY, centerX + crosshairRadius + 20f * scale, centerY, hudLinePaint)
-            canvas.drawLine(centerX, centerY - crosshairRadius - 20f * scale, centerX, centerY - crosshairRadius, hudLinePaint)
-            canvas.drawLine(centerX, centerY + crosshairRadius, centerX, centerY + crosshairRadius + 20f * scale, hudLinePaint)
+            val dialRadius = 140f * scale
+            val cx = centerX
+            val cy = centerY
 
+            // 1. Outer circular bezel
+            val bezelPaint = Paint().apply {
+                color = bezelColor
+                style = Paint.Style.STROKE
+                strokeWidth = 2f * scale
+                isAntiAlias = true
+            }
+            canvas.drawCircle(cx, cy, dialRadius, bezelPaint)
+
+            // Top bank angle arc from -60° to +60°
+            val arcPaint = Paint().apply {
+                color = hudBorderCyan
+                style = Paint.Style.STROKE
+                strokeWidth = 2.5f * scale
+                isAntiAlias = true
+            }
+            val arcRect = RectF(cx - dialRadius, cy - dialRadius, cx + dialRadius, cy + dialRadius)
+            canvas.drawArc(arcRect, 210f, 120f, false, arcPaint)
+
+            // Bank angle tick marks at 0°, ±10°, ±20°, ±30°, ±45°, ±60°
+            val tickPaint = Paint().apply {
+                style = Paint.Style.STROKE
+                strokeCap = Paint.Cap.ROUND
+                isAntiAlias = true
+            }
+            val bankAngles = listOf(-60, -45, -30, -20, -10, 0, 10, 20, 30, 45, 60)
+            for (angle in bankAngles) {
+                val rad = Math.toRadians((270 + angle).toDouble()).toFloat()
+                val isMajor = angle == 0 || abs(angle) == 30 || abs(angle) == 60
+                val tickLen = (if (isMajor) 12f else 7f) * scale
+                val tickStartX = cx + (dialRadius - tickLen) * cos(rad)
+                val tickStartY = cy + (dialRadius - tickLen) * sin(rad)
+                val tickEndX = cx + dialRadius * cos(rad)
+                val tickEndY = cy + dialRadius * sin(rad)
+                tickPaint.color = if (angle == 0) hudAmber else hudCyan
+                tickPaint.strokeWidth = (if (isMajor) 2f else 1.2f) * scale
+                canvas.drawLine(tickStartX, tickStartY, tickEndX, tickEndY, tickPaint)
+            }
+
+            // Top dead center 0° zero-roll index mark (inverted triangle)
+            val indexTopY = cy - dialRadius - 4f * scale
+            val indexSize = 7f * scale
+            val zeroIndexTriangle = Path().apply {
+                moveTo(cx, indexTopY + indexSize)
+                lineTo(cx - indexSize, indexTopY)
+                lineTo(cx + indexSize, indexTopY)
+                close()
+            }
+            val indexPaint = Paint().apply {
+                color = if (isLevel) hudGreen else hudAmber
+                style = Paint.Style.FILL
+                isAntiAlias = true
+            }
+            canvas.drawPath(zeroIndexTriangle, indexPaint)
+
+            // Dynamic Roll Pointer (traverses bank arc with -roll)
+            val rollRad = Math.toRadians((270 - roll).toDouble()).toFloat()
+            val rollPtrDist = dialRadius - 4f * scale
+            val ptrTipX = cx + rollPtrDist * cos(rollRad)
+            val ptrTipY = cy + rollPtrDist * sin(rollRad)
+            val ptrBaseRad = 6f * scale
+            val perpRad = rollRad + (Math.PI / 2).toFloat()
+            val ptrBaseDist = rollPtrDist - 12f * scale
+            val ptrBaseCenterX = cx + ptrBaseDist * cos(rollRad)
+            val ptrBaseCenterY = cy + ptrBaseDist * sin(rollRad)
+            val rollPointerPath = Path().apply {
+                moveTo(ptrTipX, ptrTipY)
+                lineTo(ptrBaseCenterX + ptrBaseRad * cos(perpRad), ptrBaseCenterY + ptrBaseRad * sin(perpRad))
+                lineTo(ptrBaseCenterX - ptrBaseRad * cos(perpRad), ptrBaseCenterY - ptrBaseRad * sin(perpRad))
+                close()
+            }
+            val rollPtrPaint = Paint().apply {
+                color = if (isLevel) hudGreen else hudCyan
+                style = Paint.Style.FILL
+                isAntiAlias = true
+            }
+            canvas.drawPath(rollPointerPath, rollPtrPaint)
+
+            // 2. DYNAMIC ARTIFICIAL HORIZON & PITCH LADDER (Clipped inside dial)
+            val clipDialPath = Path().apply {
+                addOval(RectF(cx - dialRadius + 3f * scale, cy - dialRadius + 3f * scale, cx + dialRadius - 3f * scale, cy + dialRadius - 3f * scale), Path.Direction.CW)
+            }
+            canvas.save()
+            canvas.clipPath(clipDialPath)
+            canvas.rotate(-roll, cx, cy)
+
+            val pitchPixelsPerDegree = 4.0f * scale
+            val horizonY = cy + (pitch * pitchPixelsPerDegree)
+
+            // Dynamic 0° Horizon Line
+            val horizonWingLen = dialRadius * 0.88f
+            val horizonGap = 26f * scale
+            val horizonPaint = Paint().apply {
+                color = horizonLineColor
+                style = Paint.Style.STROKE
+                strokeWidth = 3f * scale
+                strokeCap = Paint.Cap.ROUND
+                isAntiAlias = true
+            }
+            canvas.drawLine(cx - horizonWingLen, horizonY, cx - horizonGap, horizonY, horizonPaint)
+            canvas.drawLine(cx + horizonGap, horizonY, cx + horizonWingLen, horizonY, horizonPaint)
+
+            // Pitch Ladder Rungs (+10°, +20°, -10°, -20°, ±5°, ±15°, ±25°)
+            val rungs = listOf(5, 10, 15, 20, 25, 30, -5, -10, -15, -20, -25, -30)
+            val rungPaint = Paint().apply {
+                style = Paint.Style.STROKE
+                strokeCap = Paint.Cap.ROUND
+                isAntiAlias = true
+            }
+            for (deg in rungs) {
+                val rungY = horizonY - (deg * pitchPixelsPerDegree)
+                if (abs(rungY - cy) > dialRadius) continue
+
+                val isMajorRung = deg % 10 == 0
+                val rungWidth = (if (isMajorRung) 38f else 20f) * scale
+                val rungGap = (if (isMajorRung) 30f else 26f) * scale
+                val rungStroke = (if (isMajorRung) 2.6f else 2.0f) * scale
+                rungPaint.strokeWidth = rungStroke
+                rungPaint.color = if (deg > 0) hudCyan else hudBorderCyan
+
+                // Left horizontal bar
+                canvas.drawLine(cx - rungGap - rungWidth, rungY, cx - rungGap, rungY, rungPaint)
+                // Right horizontal bar
+                canvas.drawLine(cx + rungGap, rungY, cx + rungGap + rungWidth, rungY, rungPaint)
+
+                // Major 10° rungs tips pointing towards horizon
+                if (isMajorRung) {
+                    val tipLen = 7f * scale
+                    val tipDirY = if (deg > 0) tipLen else -tipLen
+                    canvas.drawLine(cx - rungGap - rungWidth, rungY, cx - rungGap - rungWidth, rungY + tipDirY, rungPaint)
+                    canvas.drawLine(cx + rungGap + rungWidth, rungY, cx + rungGap + rungWidth, rungY + tipDirY, rungPaint)
+                }
+            }
+            canvas.restore()
+
+            // 3. FIXED AIRCRAFT WATERLINE / BORESIGHT (Dead Center)
+            val centerDotRadius = 4.5f * scale
+            val ringRadius = 16f * scale
+            val wingGap = 23f * scale
+            val wingSpan = 44f * scale
+            val wingDrop = 7f * scale
+            val waterlinePaint = Paint().apply {
+                color = boresightColor
+                style = Paint.Style.STROKE
+                strokeWidth = 3f * scale
+                strokeCap = Paint.Cap.ROUND
+                isAntiAlias = true
+            }
+
+            val dotPaint = Paint().apply {
+                color = boresightColor
+                style = Paint.Style.FILL
+                isAntiAlias = true
+            }
+            canvas.drawCircle(cx, cy, centerDotRadius, dotPaint)
+            canvas.drawCircle(cx, cy, ringRadius, waterlinePaint)
+
+            val leftWingPath = Path().apply {
+                moveTo(cx - wingGap - wingSpan, cy)
+                lineTo(cx - wingGap, cy)
+                lineTo(cx - wingGap, cy + wingDrop)
+            }
+            canvas.drawPath(leftWingPath, waterlinePaint)
+
+            val rightWingPath = Path().apply {
+                moveTo(cx + wingGap + wingSpan, cy)
+                lineTo(cx + wingGap, cy)
+                lineTo(cx + wingGap, cy + wingDrop)
+            }
+            canvas.drawPath(rightWingPath, waterlinePaint)
+
+            // Optional Angular Ranging Grid ticks
             if (settings.showAngularRangingGrid) {
-                val tickPaint = Paint().apply {
+                val gridPaint = Paint().apply {
                     color = settings.rangingGridColor.toInt()
                     style = Paint.Style.STROKE
                     strokeWidth = settings.rangingGridThickness * scale
@@ -182,19 +362,19 @@ object ImageOverlayProcessor {
                     isAntiAlias = true
                 }
                 for (step in 1..3) {
-                    val offset = (step * 30f) * scale
-                    val tickLen = (if (step % 2 == 0) 12f else 6f) * scale
-                    canvas.drawLine(centerX - crosshairRadius - offset, centerY - tickLen, centerX - crosshairRadius - offset, centerY + tickLen, tickPaint)
-                    canvas.drawLine(centerX + crosshairRadius + offset, centerY - tickLen, centerX + crosshairRadius + offset, centerY + tickLen, tickPaint)
-                    canvas.drawLine(centerX - tickLen, centerY - crosshairRadius - offset, centerX + tickLen, centerY - crosshairRadius - offset, tickPaint)
-                    canvas.drawLine(centerX - tickLen, centerY + crosshairRadius + offset, centerX + tickLen, centerY + crosshairRadius + offset, tickPaint)
+                    val offset = (step * 38f) * scale
+                    val tickLen = (if (step % 2 == 0) 14f else 8f) * scale
+                    canvas.drawLine(cx - dialRadius - offset, cy - tickLen, cx - dialRadius - offset, cy + tickLen, gridPaint)
+                    canvas.drawLine(cx + dialRadius + offset, cy - tickLen, cx + dialRadius + offset, cy + tickLen, gridPaint)
+                    canvas.drawLine(cx - tickLen, cy - dialRadius - offset, cx + tickLen, cy - dialRadius - offset, gridPaint)
+                    canvas.drawLine(cx - tickLen, cy + dialRadius + offset, cx + tickLen, cy + dialRadius + offset, gridPaint)
                 }
             }
 
             if (settings.showSunMoonEphemeris && telemetry.sunAzimuth != null && telemetry.sunElevation != null) {
                 val ephText = "☀️ SUN: ${telemetry.sunAzimuth.toInt()}° Az, ${if (telemetry.sunElevation >= 0) "+" else ""}${telemetry.sunElevation.toInt()}° El"
                 val ephWidth = amberTextPaint.measureText(ephText)
-                canvas.drawText(ephText, centerX - ephWidth / 2f, centerY - crosshairRadius - 30f * scale, amberTextPaint)
+                canvas.drawText(ephText, cx - ephWidth / 2f, cy - dialRadius - 18f * scale, amberTextPaint)
             }
         }
 
@@ -307,28 +487,26 @@ object ImageOverlayProcessor {
         }
 
         // ==========================================
-        // 4. OPTIONAL APP WATERMARK BADGE
+        // 4. APP WATERMARK BADGE
         // ==========================================
-        if (settings.showWatermarkBadge) {
-            if (totalLines > 0) {
-                drawWatermarkBadge(
-                    canvas = canvas,
-                    x = width - padding - 14f * scale,
-                    y = padding + 12f * scale,
-                    scale = scale,
-                    alignRight = true,
-                    alignBottom = false
-                )
-            } else {
-                drawWatermarkBadge(
-                    canvas = canvas,
-                    x = width - padding,
-                    y = height - padding,
-                    scale = scale,
-                    alignRight = true,
-                    alignBottom = true
-                )
-            }
+        if (totalLines > 0) {
+            drawWatermarkBadge(
+                canvas = canvas,
+                x = width - padding - 14f * scale,
+                y = padding + 12f * scale,
+                scale = scale,
+                alignRight = true,
+                alignBottom = false
+            )
+        } else {
+            drawWatermarkBadge(
+                canvas = canvas,
+                x = width - padding,
+                y = height - padding,
+                scale = scale,
+                alignRight = true,
+                alignBottom = true
+            )
         }
 
         return mutableBitmap

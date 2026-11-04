@@ -238,12 +238,14 @@ fun CameraScreen(
                         val telemetryToCapture = currentTelemetry.copy(timestamp = System.currentTimeMillis())
                         val savedUri = cameraCaptureManager.capturePhoto(
                             telemetry = telemetryToCapture,
-                            burnOverlay = settings.isBurnOverlayEnabled,
-                            settings = settings
+                            settings = settings,
+                            onHardwareCaptureComplete = {
+                                // Shutter button unlocks immediately so user can take next photo!
+                                isCapturing = false
+                            }
                         )
                         lastCapturedUri = savedUri
-                        val mode = if (settings.isBurnOverlayEnabled) "Photo saved with overlay" else "Photo saved (metadata embedded)"
-                        Toast.makeText(context, mode, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Photo saved", Toast.LENGTH_SHORT).show()
                     } catch (e: Exception) {
                         Toast.makeText(context, "Capture failed: ${e.message}", Toast.LENGTH_LONG).show()
                     } finally {
@@ -564,10 +566,6 @@ private fun HudTwistyButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val rotation by animateFloatAsState(
-        targetValue = if (isHudEnabled) 0f else 180f,
-        label = "twistyRotation"
-    )
     Box(
         modifier = modifier
             .size(38.dp)
@@ -578,12 +576,10 @@ private fun HudTwistyButton(
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            imageVector = Icons.Default.ExpandMore,
+            imageVector = Icons.Default.Layers,
             contentDescription = if (isHudEnabled) "Hide HUD" else "Show HUD",
             tint = if (isHudEnabled) HudCyan else Color.Gray,
-            modifier = Modifier
-                .size(24.dp)
-                .rotate(rotation)
+            modifier = Modifier.size(20.dp)
         )
     }
 }

@@ -288,8 +288,8 @@ class CameraCaptureManager(private val context: Context) {
 
     suspend fun capturePhoto(
         telemetry: TelemetryData,
-        burnOverlay: Boolean,
-        settings: com.telemetry.camera.data.AppSettings = com.telemetry.camera.data.AppSettings()
+        settings: com.telemetry.camera.data.AppSettings = com.telemetry.camera.data.AppSettings(),
+        onHardwareCaptureComplete: (() -> Unit)? = null
     ): Uri = withContext(Dispatchers.IO) {
         val capture = imageCapture ?: throw IllegalStateException("Camera not initialized")
         capture.targetRotation = currentPhysicalRotation
@@ -314,74 +314,25 @@ class CameraCaptureManager(private val context: Context) {
             )
         }
 
+        // Hardware sensor captured frame to file: notify caller immediately so UI can re-enable shutter
+        withContext(Dispatchers.Main) {
+            onHardwareCaptureComplete?.invoke()
+        }
+
         val exif = ExifInterface(tempFile.absolutePath)
         val exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
 
-        // 2. Process image (Burn overlay or watermark badge if requested)
-        val needsBurn = burnOverlay || settings.showWatermarkBadge
-        val processedFile = if (needsBurn) {
-            val rawBitmap = BitmapFactory.decodeFile(tempFile.absolutePath)
-            val matrix = Matrix()
-            when (exifOrientation) {
-                ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
-                ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
-                ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
-                ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.postScale(-1f, 1f)
-                ExifInterface.ORIENTATION_FLIP_VERTICAL -> matrix.postScale(1f, -1f)
-            }
-            val uprightBitmap = if (!matrix.isIdentity) {
-                val rotated = Bitmap.createBitmap(rawBitmap, 0, 0, rawBitmap.width, rawBitmap.height, matrix, true)
-                rawBitmap.recycle()
-                rotated
-            } else {
-                rawBitmap
-            }
+        // Clean photo: preserve CameraX's EXIF orientation tag and embed non-destructive telemetry
+        ExifTelemetryHelper.writeTelemetryToExif(
+            tempFile,
+            telemetry.copy(isBurned = false),
+            orientation = exifOrientation,
+            unitSystem = settings.unitSystem
+        )
 
-            val watermarkedBitmap = if (burnOverlay) {
-                ImageOverlayProcessor.burnOverlayIntoBitmap(
-                    uprightBitmap,
-                    telemetry.copy(isBurned = true),
-                    settings
-                )
-            } else {
-                ImageOverlayProcessor.burnWatermarkBadgeOnly(
-                    uprightBitmap,
-                    settings
-                )
-            }
-
-            val burnedFile = File.createTempFile("processed_", ".jpg", context.cacheDir)
-            FileOutputStream(burnedFile).use { out ->
-                watermarkedBitmap.compress(Bitmap.CompressFormat.JPEG, 95, out)
-            }
-            if (uprightBitmap != watermarkedBitmap) {
-                watermarkedBitmap.recycle()
-            }
-            uprightBitmap.recycle()
-            tempFile.delete()
-
-            // Pixels are physically upright (landscape or portrait), orientation is NORMAL
-            ExifTelemetryHelper.writeTelemetryToExif(
-                burnedFile,
-                telemetry.copy(isBurned = burnOverlay),
-                orientation = ExifInterface.ORIENTATION_NORMAL,
-                unitSystem = settings.unitSystem
-            )
-            burnedFile
-        } else {
-            // Clean photo: preserve CameraX's EXIF orientation tag
-            ExifTelemetryHelper.writeTelemetryToExif(
-                tempFile,
-                telemetry.copy(isBurned = false),
-                orientation = exifOrientation,
-                unitSystem = settings.unitSystem
-            )
-            tempFile
-        }
-
-        // 3. Save to MediaStore (Pictures/TelemetryCamera)
-        val savedUri = saveToMediaStore(processedFile, telemetry.copy(isBurned = burnOverlay), burnOverlay)
-        processedFile.delete()
+        // 2. Save to MediaStore (Pictures/TelemetryCamera)
+        val savedUri = saveToMediaStore(tempFile, telemetry.copy(isBurned = false), false)
+        tempFile.delete()
 
         savedUri
     }

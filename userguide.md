@@ -64,8 +64,10 @@ The viewfinder features an aerospace Heads-Up Display (HUD) projected over the a
   * **Degrees, Minutes, Seconds (DMS)**: `37°49'11.7"N, 122°28'41.7"W` (nautical and aeronautical chart standard).
 
 ### Artificial Horizon & Pitch Ladder
-* **Center Crosshair Reticle**: Boresighted to the optical center of the camera lens.
-* **Pitch Ladder Wings**: Dynamic horizon wings that bank and tilt with device roll, showing the true horizontal plane regardless of perspective.
+* **Avionics Primary Flight Display**: True aeronautical artificial horizon instrument with an outer bezel, top bank angle arc (-60° to +60°), and roll pointer.
+* **Dead-Center Aircraft Waterline Boresight**: Stepped aircraft wings (`──┐   ┌──`), center optical ring, and target dot boresighted to the optical center of the camera lens.
+* **Roll-Stabilized Pitch Ladder**: Dynamic 0° horizon line and pitch rungs (+10°, +20°, -10°, -20° with horizon reference tips, plus 5° graduation bars) that bank and tilt with device attitude inside the instrument dial.
+* **Leveling Highlight**: Automatically turns crosshairs and horizon elements green (`#22C55E`) when the device is level within ±0.8° in both pitch and roll.
 * **Angular Ranging Graduations**: Opt-in milliradian and degree tick marks on horizontal and vertical axes to estimate target height ($h = d \cdot \tan\theta$).
 * **Celestial Ephemeris**: Real-time solar and lunar position indicators (`SUN: 083° / -30°`, `MOON: 130° / +67°`) showing celestial azimuth and elevation relative to the horizon.
 
@@ -78,9 +80,9 @@ The viewfinder features an aerospace Heads-Up Display (HUD) projected over the a
 
 ### Camera Controls
 * **Mode Selector (`[ PHOTO | VIDEO ]`)**: Toggle between high-res photo capture and synchronized video recording with companion `.srt` subtitle files.
-* **Shutter Button**: Large center tactile button (cyan ring for photos, red dot for video).
+* **Shutter Button**: Large center tactile button (cyan ring for photos, red dot for video). Saves photos instantly via fast background processing.
 * **Gallery Thumbnail (Bottom-Left)**: Instant shortcut to the Telemetry Gallery showing the most recent capture.
-* **HUD Twisty Toggle (`⌄` / `⌃`) (Bottom-Right)**: Instantly reveals or collapses the entire live HUD overlay on the camera viewfinder with a 1-tap animated twisty.
+* **HUD Toggle (`Layers` icon) (Bottom-Right)**: Instantly reveals or hides the live HUD overlay on the camera viewfinder with a 1-tap button matching the gallery's Layers toggle.
 * **Settings Gear (Bottom-Right)**: Opens the comprehensive configuration screen.
 * **Quick Help (`?`) (Top-Right)**: Floating button to open the searchable Telemetry Glossary from the viewfinder at any time.
 * **Tap-to-Focus & Exposure**: Tapping anywhere on the viewfinder triggers automatic focus and auto-exposure metering at that exact point.
@@ -124,12 +126,9 @@ The Telemetry Gallery allows you to review, inspect, export, and convert photos 
 
 Fine-tune every HUD card, unit of measurement, calculation model, and visual display option.
 
-### General & Watermark Controls
-* **HUD Overlay**: Master switch for the live camera viewfinder HUD.
-* **Burn-in by Default**:
-  * **OFF (Default)**: Saves pristine clean photos with 100% telemetry embedded in metadata.
-  * **ON**: Stamps the HUD overlay permanently onto the photo pixels at full sensor resolution.
-* **App Watermark Badge**: Stamps a subtle `'⌖ TELEMETRY'` badge in the top-right corner to identify metadata-compatible photos when browsing in external galleries (Google Photos, Files).
+### Artificial Horizon & Leveling
+* **Artificial Horizon Widget**: Toggle the central avionics artificial horizon instrument on or off. When enabled, displays the dynamic pitch ladder, roll pointer, bank angle arc, and aircraft waterline boresight.
+* *Note*: Master HUD visibility is toggled directly on the live viewfinder screen using the **Layers** icon button. Burned copies with full HUD overlays are created on demand directly in the Gallery.
 
 ### Display Size & Coordinate Modes
 * **HUD Display Size**:

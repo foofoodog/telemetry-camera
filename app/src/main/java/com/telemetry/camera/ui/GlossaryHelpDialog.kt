@@ -46,8 +46,7 @@ val GLOSSARY_ITEMS = listOf(
         title = "Live HUD Overlay",
         category = "Camera",
         summary = "Toggles aerospace heads-up display overlay on live camera viewfinder.",
-        details = "Displays real-time telemetry banners, horizon reticle wings, and motion cards directly on the camera preview. Tap the twisty icon button next to Settings to instantly toggle the HUD on or off. Hiding the HUD does not stop telemetry from being recorded into photo EXIF metadata.",
-        settingTarget = "hud_overlay"
+        details = "Displays real-time telemetry banners, horizon reticle wings, and motion cards directly on the camera preview. Tap the Layers icon button on the viewfinder to instantly toggle the HUD on or off. Hiding the HUD does not stop telemetry from being recorded into photo EXIF metadata."
     ),
     GlossaryEntry(
         title = "Photo / Video Mode",
@@ -56,10 +55,10 @@ val GLOSSARY_ITEMS = listOf(
         details = "In Photo mode, CameraX optimizes preview and capture for low-light clarity. In Video mode, binds video recording and outputs synchronized .SRT subtitle telemetry files alongside the .MP4."
     ),
     GlossaryEntry(
-        title = "Horizon Reticle & Pitch Ladder",
+        title = "Artificial Horizon Widget",
         category = "Camera",
-        summary = "Aviation-style boresight crosshair with dynamic pitch wings.",
-        details = "Displays aircraft-style horizon reference wings that rotate dynamically with device pitch and roll, maintaining true horizontal orientation regardless of perspective.",
+        summary = "Aviation attitude indicator with dynamic pitch ladder and roll arc.",
+        details = "Displays aircraft-style boresight waterline, dynamic 0° horizon line, sky/ground pitch ladder rungs, and top bank angle roll pointer. Can be toggled on/off in Settings under Artificial Horizon & Leveling.",
         settingTarget = "reticle_horizon"
     ),
     GlossaryEntry(
@@ -180,27 +179,6 @@ val GLOSSARY_ITEMS = listOf(
     ),
 
     // === 3. SETTINGS SCREEN ===
-    GlossaryEntry(
-        title = "HUD Overlay Master Switch",
-        category = "Settings",
-        summary = "Master toggle to show or hide HUD graphics on camera viewfinder.",
-        details = "When disabled, keeps the camera view completely clean and unobstructed while maintaining full background sensor recording in photo metadata. Can also be toggled directly from the live viewfinder using the twisty button next to Settings.",
-        settingTarget = "hud_overlay"
-    ),
-    GlossaryEntry(
-        title = "Burn-in by Default",
-        category = "Settings",
-        summary = "Default photo capture saving behavior.",
-        details = "When OFF (default), captures pristine clean photos with 100% telemetry stored in metadata. When ON, rasterizes HUD graphics permanently into every captured photo.",
-        settingTarget = "burn_in"
-    ),
-    GlossaryEntry(
-        title = "App Watermark Badge",
-        category = "Settings",
-        summary = "Stamps '⌖ TELEMETRY' in top-right corner of captured photos.",
-        details = "Subtle corner badge that identifies metadata-compatible photos when browsing in external photo apps like Google Photos, Google Drive, or Android Files.",
-        settingTarget = "watermark_badge"
-    ),
     GlossaryEntry(
         title = "HUD Display Size",
         category = "Settings",
