@@ -178,7 +178,54 @@ class GalleryRepository(private val context: Context) {
         items.sortedByDescending { it.dateTaken }
     }
 
+    private fun deleteCompanionFiles(uri: Uri) {
+        try {
+            val projection = arrayOf(MediaStore.MediaColumns.DATA)
+            context.contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val path = cursor.getString(0)
+                    if (path != null) {
+                        val mainFile = File(path)
+                        val baseName = mainFile.nameWithoutExtension
+                        val parent = mainFile.parentFile
+                        if (parent != null && parent.exists()) {
+                            val jsonFile = File(parent, "$baseName.json")
+                            if (jsonFile.exists()) jsonFile.delete()
+
+                            val srtFile = File(parent, "$baseName.srt")
+                            if (srtFile.exists()) srtFile.delete()
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            // Ignored: best-effort cleanup of companion files
+        }
+    }
+
+    private fun tryDeleteUnderlyingFile(uri: Uri): Boolean {
+        return try {
+            val projection = arrayOf(MediaStore.MediaColumns.DATA)
+            context.contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val path = cursor.getString(0)
+                    if (path != null) {
+                        val file = File(path)
+                        if (file.exists() && file.delete()) {
+                            return true
+                        }
+                    }
+                }
+            }
+            false
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     suspend fun deletePhoto(uri: Uri): DeleteResult = withContext(Dispatchers.IO) {
+        deleteCompanionFiles(uri)
+
         // 1. If it's a file:// URI, delete directly
         if (uri.scheme == "file") {
             try {
@@ -192,7 +239,7 @@ class GalleryRepository(private val context: Context) {
             }
         }
 
-        // 2. Try standard ContentResolver delete
+        // 2. Try standard ContentResolver delete (succeeds without OS prompt for app-owned files)
         try {
             val rows = context.contentResolver.delete(uri, null, null)
             if (rows > 0) return@withContext DeleteResult.Success
@@ -212,21 +259,8 @@ class GalleryRepository(private val context: Context) {
         }
 
         // 3. Fallback: query underlying file path if ContentResolver deletion didn't throw permission prompt
-        try {
-            val projection = arrayOf(MediaStore.MediaColumns.DATA)
-            context.contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
-                if (cursor.moveToFirst()) {
-                    val path = cursor.getString(0)
-                    if (path != null) {
-                        val file = File(path)
-                        if (file.exists() && file.delete()) {
-                            return@withContext DeleteResult.Success
-                        }
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        if (tryDeleteUnderlyingFile(uri)) {
+            return@withContext DeleteResult.Success
         }
 
         DeleteResult.Failed
@@ -236,42 +270,68 @@ class GalleryRepository(private val context: Context) {
         if (uris.isEmpty()) return@withContext DeleteResult.Success
         if (uris.size == 1) return@withContext deletePhoto(uris.first())
 
-        val contentUris = uris.filter { it.scheme == "content" }
-        val fileUris = uris.filter { it.scheme == "file" }
+        val unhandledUris = mutableListOf<Uri>()
 
-        for (fUri in fileUris) {
-            try {
-                fUri.path?.let { File(it).delete() }
-            } catch (e: Exception) {
-                e.printStackTrace()
+        for (uri in uris) {
+            deleteCompanionFiles(uri)
+            if (uri.scheme == "file") {
+                try {
+                    val file = uri.path?.let { File(it) }
+                    if (file != null && file.exists()) {
+                        file.delete()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            } else {
+                var deleted = false
+                try {
+                    val rows = context.contentResolver.delete(uri, null, null)
+                    if (rows > 0) {
+                        deleted = true
+                    }
+                } catch (e: SecurityException) {
+                    // Elevated permission required for this URI
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                if (!deleted) {
+                    if (tryDeleteUnderlyingFile(uri)) {
+                        deleted = true
+                    }
+                }
+
+                if (!deleted) {
+                    unhandledUris.add(uri)
+                }
             }
         }
 
-        if (contentUris.isNotEmpty()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (unhandledUris.isEmpty()) {
+            return@withContext DeleteResult.Success
+        }
+
+        // Only request system permission for files that couldn't be deleted directly
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            try {
+                val intentSender = MediaStore.createDeleteRequest(context.contentResolver, unhandledUris).intentSender
+                return@withContext DeleteResult.RequiresPermission(intentSender)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            for (uri in unhandledUris) {
                 try {
-                    val intentSender = MediaStore.createDeleteRequest(context.contentResolver, contentUris).intentSender
-                    return@withContext DeleteResult.RequiresPermission(intentSender)
+                    context.contentResolver.delete(uri, null, null)
+                } catch (e: RecoverableSecurityException) {
+                    return@withContext DeleteResult.RequiresPermission(e.userAction.actionIntent.intentSender)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
-        } else {
-            return@withContext DeleteResult.Success
         }
 
-        // Fallback for older Android: delete individually
-        var anyPermissionNeeded: IntentSender? = null
-        for (uri in contentUris) {
-            val res = deletePhoto(uri)
-            if (res is DeleteResult.RequiresPermission && anyPermissionNeeded == null) {
-                anyPermissionNeeded = res.intentSender
-            }
-        }
-        if (anyPermissionNeeded != null) {
-            DeleteResult.RequiresPermission(anyPermissionNeeded)
-        } else {
-            DeleteResult.Success
-        }
+        DeleteResult.Success
     }
 }
