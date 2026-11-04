@@ -151,44 +151,59 @@ All telemetry data is saved with 100% fidelity into every photo, regardless of w
 
 ```
 telemetry-camera/
+├── .github/workflows/
+│   └── clean-history.yml         # CI workflow for repository health
 ├── app/
 │   ├── src/main/
-│   │   ├── AndroidManifest.xml               # App manifest, permissions & VIEW/SEND intent filters
+│   │   ├── AndroidManifest.xml   # App manifest, permissions & intent filters
+│   │   ├── assets/               # Bundled offline user guide HTML & WebP graphics
 │   │   ├── java/com/telemetry/camera/
 │   │   │   ├── MainActivity.kt               # Lifecycle, permissions, intent dispatch & routing
 │   │   │   ├── camera/
-│   │   │   │   ├── CameraCaptureManager.kt   # CameraX capture, orientation matrix & MediaStore saving
-│   │   │   │   └── ImageOverlayProcessor.kt  # High-res Canvas rasterization, HUD burning & watermark badge
+│   │   │   │   ├── CameraCaptureManager.kt   # CameraX capture, orientation matrix & background saving
+│   │   │   │   └── ImageOverlayProcessor.kt  # High-res Canvas rasterization & avionics HUD burning
 │   │   │   ├── data/
-│   │   │   │   ├── AppSettings.kt            # Settings data model, UnitSystem, Enums & SharedPreferences
-│   │   │   │   ├── ExifTelemetryHelper.kt    # EXIF UserComment JSON serializer & EXIF tag writer/reader
-│   │   │   │   ├── GalleryRepository.kt      # MediaStore querying & photo management
-│   │   │   │   ├── GisExportHelper.kt        # GeoJSON, GPX, KML, and CSV GIS exporter
-│   │   │   │   └── TelemetryData.kt          # Metric formatting (DMS, Cardinal, Altitude, Pressure, Temp, Speed)
+│   │   │   │   ├── AppSettings.kt            # Settings data model, UnitSystem, Enums & Preferences
+│   │   │   │   ├── ExifTelemetryHelper.kt    # EXIF UserComment JSON serializer & tag reader/writer
+│   │   │   │   ├── GalleryRepository.kt      # MediaStore querying, batch deletion & photo management
+│   │   │   │   ├── GisExportHelper.kt        # GeoJSON, GPX, KML, CSV & 3D Google Earth KMZ exporter
+│   │   │   │   └── TelemetryData.kt          # Metric formatting (DMS, Cardinal, Altitude, Speed, etc.)
 │   │   │   ├── sensors/
 │   │   │   │   ├── EnvironmentTracker.kt     # Barometer and ambient temperature sensor listeners
 │   │   │   │   ├── EphemerisCalculator.kt    # Solar & lunar celestial azimuth/elevation math
 │   │   │   │   ├── LocationTracker.kt        # FusedLocationProviderClient (Lat, Lon, Alt, Speed, Bearing)
-│   │   │   │   └── OrientationTracker.kt     # Rotation vector sensor & optical-axis pitch/roll/azimuth math
+│   │   │   │   └── OrientationTracker.kt     # Rotation vector sensor & optical-axis pitch/roll math
 │   │   │   └── ui/
-│   │   │       ├── CameraScreen.kt           # Viewfinder, HUD layer, shutter button & controls
-│   │   │       ├── GalleryViewerScreen.kt    # Swipeable photo pager, EXIF HUD playback, burn & delete
-│   │   │       ├── SettingsScreen.kt         # Comprehensive settings cards with live switches & radio groups
+│   │   │       ├── CameraScreen.kt           # Viewfinder, HUD layer, shutter button & mode toggles
+│   │   │       ├── GalleryViewerScreen.kt    # Photo/video pager, EXIF HUD playback, GIS tools & burn
+│   │   │       ├── GlossaryHelpDialog.kt     # Searchable sensor mathematics & settings deep-link modal
+│   │   │       ├── SettingsScreen.kt         # Comprehensive settings cards with live toggles
+│   │   │       ├── UserGuideDialog.kt        # 100% offline illustrated field user guide webview dialog
 │   │   │       ├── components/
-│   │   │       │   └── HudOverlay.kt         # Vector HUD composables (top card, reticle, cockpit, motion)
+│   │   │       │   └── HudOverlay.kt         # Vector HUD composables (artificial horizon, cards, reticle)
 │   │   │       └── theme/                    # Cyber/tactical HUD color palette and typography
-│   │   └── res/
-│   └── build.gradle.kts
+│   │   └── res/                              # Vector drawables, mipmaps, strings, and XML styles
+│   └── build.gradle.kts                      # Module build configuration, dependencies & ProGuard rules
 ├── docs/
-│   ├── userguide.md          # Illustrated field user guide
+│   ├── index.html                # Product landing page & web showcase
+│   ├── privacy.html              # Privacy policy for Google Play & web
+│   ├── userguide.md              # Illustrated field user guide & phototheodolite workflows
 │   ├── keystore.properties.example # Signing credentials template
-│   ├── screenshots/          # Viewfinder & UI captures
-│   └── store_assets/         # App icons & store graphics
-├── gradle/libs.versions.toml
-├── build.gradle.kts
-├── settings.gradle.kts
-├── .gitignore
-└── README.md
+│   ├── screenshots/              # High-resolution viewfinder & UI captures
+│   └── store_assets/             # App icons, feature graphics & store listing text
+├── gradle/
+│   ├── libs.versions.toml        # Version catalog for dependencies and plugins
+│   └── wrapper/                  # Gradle Wrapper JAR and properties
+├── scripts/
+│   └── generate_offline_guide.py # Compiles userguide.md into bundled offline HTML assets
+├── build.gradle.kts              # Root project build configuration
+├── gradle.properties             # JVM arguments & AndroidX flags
+├── gradlew                       # Gradle wrapper shell script (Linux/macOS)
+├── gradlew.bat                   # Gradle wrapper batch script (Windows)
+├── settings.gradle.kts           # Root project name, subprojects & repository declarations
+├── LICENSE                       # MIT Open Source License
+├── .gitignore                    # Git exclusions (keystores, build outputs, local properties)
+└── README.md                     # Project overview and technical documentation
 ```
 
 ---
