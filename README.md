@@ -88,13 +88,14 @@ We are actively seeking field testers! You can join the testing track and instal
   ```
 * **Video Editor Compatibility**: Drop the companion `.srt` directly into DaVinci Resolve, Adobe Premiere, or Final Cut Pro for custom graphic HUD styling.
 
-### 9. Professional GIS & 3D Google Earth Data Export
+### 9. Interactive OpenStreetMap (OSM) & Professional GIS Export
+* **Built-in OpenStreetMap Survey Map**: Full-screen interactive map powered by `osmdroid` with zero proprietary API key lock-in. Features high-contrast tactical cyber styling, live metric/imperial scale bar, magnetic/true north compass overlay, and smooth bounding box navigation.
+* **Multi-Layer Tile Switcher**: Toggle dynamically between Standard OSM Mapnik, OpenTopoMap (contour terrain with elevation profiles), and USGS Satellite imagery.
+* **Directional Survey Markers & Track Polylines**: Plots chronological camera capture paths connected by polyline tracks. Each photo waypoint displays custom orientation pins indicating the camera's optical heading azimuth, with bottom inspection cards linking back to the gallery.
+* **External GPX/KML/KMZ Survey Import**: Import external field tracks, flood survey paths, or drone flight logs from device storage with automatic coordinate parsing, bounding box calculation, and geodesic distance summation.
 * **Google Earth KMZ 3D Bundles**: Package entire surveys into standalone `.kmz` archives embedding full-resolution photos, 3D `<Camera>` virtual viewports (recreating the exact photographer 6-DoF position, pitch, roll, and heading in Google Earth 3D terrain), and interactive HTML metadata popup cards.
-* **Google Earth KML**: Lightweight placemarks with 3D camera angles and telemetry callouts.
+* **Google Earth KML & Waypoints GPX**: Standard GPX 1.1 waypoint files and KML placemarks with 3D camera angles for handheld GPS units, QGIS, and ArcGIS.
 * **Sidecar JSON**: Export companion `<photo_name>.json` files containing all raw numeric telemetry metrics.
-* **GPS Waypoints GPX**: Standard GPX 1.1 waypoint files for handheld GPS devices, QGIS, and ArcGIS.
-* **Spreadsheet CSV**: Delimited tabular export with timestamps, coordinates, altitude, attitude, and atmospheric values.
-* **Map View**: One-tap launch to inspect photo location in your preferred map application.
 
 ### 10. Built-in Searchable Glossary & Offline Field Manual
 * **In-App Telemetry Glossary**: Search across all sensors, HUD toggles, and underlying mathematical equations ($h = d \cdot \tan\theta$, true heading declination), with one-tap deep links that jump directly to and highlight corresponding settings.
@@ -167,6 +168,7 @@ telemetry-camera/
 │   │   │   │   ├── ExifTelemetryHelper.kt    # EXIF UserComment JSON serializer & tag reader/writer
 │   │   │   │   ├── GalleryRepository.kt      # MediaStore querying, batch deletion & photo management
 │   │   │   │   ├── GisExportHelper.kt        # GeoJSON, GPX, KML, CSV & 3D Google Earth KMZ exporter
+│   │   │   │   ├── SurveyPathParser.kt       # GPX, KML, KMZ stream parser & geodesic distance math
 │   │   │   │   └── TelemetryData.kt          # Metric formatting (DMS, Cardinal, Altitude, Speed, etc.)
 │   │   │   ├── sensors/
 │   │   │   │   ├── EnvironmentTracker.kt     # Barometer and ambient temperature sensor listeners
@@ -177,6 +179,7 @@ telemetry-camera/
 │   │   │       ├── CameraScreen.kt           # Viewfinder, HUD layer, shutter button & mode toggles
 │   │   │       ├── GalleryViewerScreen.kt    # Photo/video pager, EXIF HUD playback, GIS tools & burn
 │   │   │       ├── GlossaryHelpDialog.kt     # Searchable sensor mathematics & settings deep-link modal
+│   │   │       ├── MapViewerScreen.kt        # Interactive OSM viewer, tile switcher, track & marker overlay
 │   │   │       ├── SettingsScreen.kt         # Comprehensive settings cards with live toggles
 │   │   │       ├── UserGuideDialog.kt        # 100% offline illustrated field user guide webview dialog
 │   │   │       ├── components/

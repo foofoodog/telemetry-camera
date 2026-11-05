@@ -9,6 +9,7 @@ camerax = "1.4.0"
 exifinterface = "1.3.7"
 coil = "2.7.0"
 materialIconsExtended = "1.7.4"
+osmdroid = "6.1.20"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -35,6 +36,9 @@ androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterfa
 
 # Image Loading
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+
+# OpenStreetMap (OSMDroid)
+osmdroid-android = { group = "org.osmdroid", name = "osmdroid-android", version.ref = "osmdroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

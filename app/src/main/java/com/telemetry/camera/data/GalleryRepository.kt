@@ -18,7 +18,8 @@ data class GalleryPhoto(
     val displayName: String,
     val dateTaken: Long,
     val isVideo: Boolean = displayName.endsWith(".mp4", ignoreCase = true),
-    val isBurned: Boolean = displayName.contains("BURNED")
+    val isBurned: Boolean = displayName.contains("BURNED"),
+    val telemetry: TelemetryData? = null
 )
 
 sealed class DeleteResult {

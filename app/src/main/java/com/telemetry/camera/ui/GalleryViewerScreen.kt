@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.Deselect
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.Pause
@@ -97,6 +98,7 @@ fun GalleryViewerScreen(
     settings: AppSettings = AppSettings(),
     onBack: () -> Unit,
     onNavigateToSetting: (String) -> Unit = {},
+    onOpenMap: (Uri?, List<GalleryPhoto>) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -233,6 +235,7 @@ fun GalleryViewerScreen(
 
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val dropdownMenuWidth = (configuration.screenWidthDp.dp - 24.dp).coerceIn(340.dp, 400.dp)
 
     // Determine initial page
     val initialPage = remember(photos, initialPhotoUri) {
@@ -529,24 +532,13 @@ fun GalleryViewerScreen(
                         DropdownMenu(
                             expanded = showExportMenu,
                             onDismissRequest = { showExportMenu = false },
-                            modifier = Modifier.background(Slate800)
+                            modifier = Modifier
+                                .requiredWidth(dropdownMenuWidth)
+                                .background(Slate800)
                         ) {
-                            // Multi-Select / Batch Actions Option
-                            DropdownMenuItem(
-                                text = { Text("Multi-Select / Batch Actions", color = Color.White) },
-                                leadingIcon = { Icon(Icons.Default.Checklist, contentDescription = null, tint = HudCyan) },
-                                onClick = {
-                                    showExportMenu = false
-                                    isMultiSelectMode = true
-                                    if (currentPhoto != null && !selectedPhotos.contains(currentPhoto)) {
-                                        selectedPhotos.add(currentPhoto)
-                                    }
-                                }
-                            )
-
                             // Field User Guide Option
                             DropdownMenuItem(
-                                text = { Text("Field User Guide", color = Color.White) },
+                                text = { Text("Field User Guide", color = Color.White, maxLines = 1, softWrap = false) },
                                 leadingIcon = { Icon(Icons.Default.Description, contentDescription = null, tint = HudCyan) },
                                 onClick = {
                                     showExportMenu = false
@@ -556,7 +548,7 @@ fun GalleryViewerScreen(
 
                             // Glossary & Help Option
                             DropdownMenuItem(
-                                text = { Text("Glossary & Help", color = Color.White) },
+                                text = { Text("Glossary & Help", color = Color.White, maxLines = 1, softWrap = false) },
                                 leadingIcon = { Icon(Icons.Default.HelpOutline, contentDescription = null, tint = HudCyan) },
                                 onClick = {
                                     showExportMenu = false
@@ -566,7 +558,7 @@ fun GalleryViewerScreen(
 
                             if (currentPhoto?.isVideo == true) {
                                 DropdownMenuItem(
-                                    text = { Text("Play in Video Player", color = Color.White) },
+                                    text = { Text("Play in Video Player", color = Color.White, maxLines = 1, softWrap = false) },
                                     leadingIcon = { Icon(Icons.Default.PlayArrow, contentDescription = null, tint = HudCyan) },
                                     onClick = {
                                         showExportMenu = false
@@ -585,9 +577,24 @@ fun GalleryViewerScreen(
 
                             HorizontalDivider(color = Slate700)
 
+                            // 0. Interactive Survey Map (OpenStreetMap)
+                            DropdownMenuItem(
+                                text = { Text("Interactive Survey Map", color = Color.White, maxLines = 1, softWrap = false) },
+                                leadingIcon = { Icon(Icons.Default.Map, contentDescription = null, tint = HudCyan) },
+                                onClick = {
+                                    showExportMenu = false
+                                    val photosWithTelemetry = photos.map { p ->
+                                        if (p.telemetry == null && telemetryCache.containsKey(p.uri)) {
+                                            p.copy(telemetry = telemetryCache[p.uri])
+                                        } else p
+                                    }
+                                    onOpenMap(currentPhoto?.uri, photosWithTelemetry)
+                                }
+                            )
+
                             // 1. View in Map App
                             DropdownMenuItem(
-                                text = { Text("Open in Map App", color = Color.White) },
+                                text = { Text("Open in Map App", color = Color.White, maxLines = 1, softWrap = false) },
                                 leadingIcon = { Icon(Icons.Default.Place, contentDescription = null, tint = HudCyan) },
                                 onClick = {
                                     showExportMenu = false
@@ -609,7 +616,7 @@ fun GalleryViewerScreen(
 
                             // 2. Export Sidecar JSON
                             DropdownMenuItem(
-                                text = { Text("Export Sidecar JSON", color = Color.White) },
+                                text = { Text("Export Sidecar JSON", color = Color.White, maxLines = 1, softWrap = false) },
                                 leadingIcon = { Icon(Icons.Default.Description, contentDescription = null, tint = HudCyan) },
                                 onClick = {
                                     showExportMenu = false
@@ -634,7 +641,7 @@ fun GalleryViewerScreen(
 
                             // 3. Export Google Earth KMZ (Photos + 3D Viewports Bundle)
                             DropdownMenuItem(
-                                text = { Text("Export Google Earth KMZ", color = Color.White) },
+                                text = { Text("Export Google Earth KMZ", color = Color.White, maxLines = 1, softWrap = false) },
                                 leadingIcon = { Icon(Icons.Default.Layers, contentDescription = null, tint = HudCyan) },
                                 onClick = {
                                     showExportMenu = false
@@ -678,7 +685,7 @@ fun GalleryViewerScreen(
 
                             // 4. Export Survey KML (Google Earth)
                             DropdownMenuItem(
-                                text = { Text("Export Survey KML", color = Color.White) },
+                                text = { Text("Export Survey KML", color = Color.White, maxLines = 1, softWrap = false) },
                                 leadingIcon = { Icon(Icons.Default.Public, contentDescription = null, tint = HudCyan) },
                                 onClick = {
                                     showExportMenu = false
@@ -706,9 +713,9 @@ fun GalleryViewerScreen(
                                 }
                             )
 
-                            // 4. Export Survey GPX
+                            // 5. Export Survey GPX
                             DropdownMenuItem(
-                                text = { Text("Export Survey GPX", color = Color.White) },
+                                text = { Text("Export Survey GPX", color = Color.White, maxLines = 1, softWrap = false) },
                                 leadingIcon = { Icon(Icons.Default.Navigation, contentDescription = null, tint = HudCyan) },
                                 onClick = {
                                     showExportMenu = false
@@ -1109,6 +1116,34 @@ fun GalleryViewerScreen(
                         } else null
                     }
 
+                    // 0. Survey Map for Selected Photos
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.clickable(enabled = selectedPhotos.isNotEmpty()) {
+                            val selectedWithTelemetry = selectedPhotos.map { p ->
+                                if (p.telemetry == null && telemetryCache.containsKey(p.uri)) {
+                                    p.copy(telemetry = telemetryCache[p.uri])
+                                } else p
+                            }
+                            onOpenMap(selectedWithTelemetry.firstOrNull()?.uri, selectedWithTelemetry)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Map,
+                            contentDescription = "Survey Map",
+                            tint = if (selectedPhotos.isNotEmpty()) HudCyan else Color.DarkGray,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "MAP (${selectedPhotos.size})",
+                            color = if (selectedPhotos.isNotEmpty()) Color.White else Color.DarkGray,
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
                     // 1. Export KMZ
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -1179,10 +1214,12 @@ fun GalleryViewerScreen(
                         DropdownMenu(
                             expanded = showBatchGisMenu,
                             onDismissRequest = { showBatchGisMenu = false },
-                            modifier = Modifier.background(Slate800)
+                            modifier = Modifier
+                                .requiredWidth(dropdownMenuWidth)
+                                .background(Slate800)
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Export Survey KML (${validKmzItems.size})", color = Color.White) },
+                                text = { Text("Export Survey KML (${validKmzItems.size})", color = Color.White, maxLines = 1, softWrap = false) },
                                 leadingIcon = { Icon(Icons.Default.Public, null, tint = HudCyan) },
                                 onClick = {
                                     showBatchGisMenu = false
@@ -1201,7 +1238,7 @@ fun GalleryViewerScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Export Survey GPX (${validKmzItems.size})", color = Color.White) },
+                                text = { Text("Export Survey GPX (${validKmzItems.size})", color = Color.White, maxLines = 1, softWrap = false) },
                                 leadingIcon = { Icon(Icons.Default.Navigation, null, tint = HudCyan) },
                                 onClick = {
                                     showBatchGisMenu = false

@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.telemetry.camera.camera.CameraCaptureManager
+import com.telemetry.camera.data.GalleryPhoto
 import com.telemetry.camera.data.GalleryRepository
 import com.telemetry.camera.data.SettingsManager
 import com.telemetry.camera.sensors.EnvironmentTracker
@@ -34,6 +35,7 @@ import com.telemetry.camera.sensors.OrientationTracker
 import com.telemetry.camera.ui.CameraScreen
 import com.telemetry.camera.ui.GalleryViewerScreen
 import com.telemetry.camera.ui.GlossaryHelpDialog
+import com.telemetry.camera.ui.MapViewerScreen
 import com.telemetry.camera.ui.SettingsScreen
 import com.telemetry.camera.ui.UserGuideDialog
 import com.telemetry.camera.ui.theme.HudAmber
@@ -45,7 +47,8 @@ import com.telemetry.camera.ui.theme.TelemetryCameraTheme
 enum class AppNavScreen {
     CAMERA,
     GALLERY,
-    SETTINGS
+    SETTINGS,
+    MAP
 }
 
 class MainActivity : ComponentActivity() {
@@ -157,6 +160,7 @@ fun MainContent(
             when (initialScreen) {
                 "settings" -> AppNavScreen.SETTINGS
                 "gallery" -> AppNavScreen.GALLERY
+                "map" -> AppNavScreen.MAP
                 else -> if (incomingUri != null) AppNavScreen.GALLERY else AppNavScreen.CAMERA
             }
         )
@@ -165,6 +169,8 @@ fun MainContent(
     var showDirectGlossary by remember { mutableStateOf(initialScreen == "glossary") }
     var showDirectUserGuide by remember { mutableStateOf(initialScreen == "guide" || initialScreen == "userguide") }
     var initialGalleryUri by remember { mutableStateOf(incomingUri) }
+    var selectedMapPhotoUri by remember { mutableStateOf<Uri?>(null) }
+    var mapPhotos by remember { mutableStateOf<List<GalleryPhoto>>(emptyList()) }
 
     if (showDirectGlossary) {
         GlossaryHelpDialog(
@@ -191,6 +197,17 @@ fun MainContent(
         if (incomingUri != null) {
             initialGalleryUri = incomingUri
             currentScreen = AppNavScreen.GALLERY
+        }
+    }
+
+    LaunchedEffect(initialScreen) {
+        when (initialScreen) {
+            "settings" -> currentScreen = AppNavScreen.SETTINGS
+            "gallery" -> currentScreen = AppNavScreen.GALLERY
+            "map" -> currentScreen = AppNavScreen.MAP
+            "glossary" -> showDirectGlossary = true
+            "guide", "userguide" -> showDirectUserGuide = true
+            else -> {}
         }
     }
 
@@ -267,6 +284,11 @@ fun MainContent(
                         onNavigateToSetting = { settingKey ->
                             targetSettingKey = settingKey
                             currentScreen = AppNavScreen.SETTINGS
+                        },
+                        onOpenMap = { uri, photos ->
+                            selectedMapPhotoUri = uri
+                            mapPhotos = photos
+                            currentScreen = AppNavScreen.MAP
                         }
                     )
                 }
@@ -278,6 +300,21 @@ fun MainContent(
                         onBack = {
                             targetSettingKey = null
                             currentScreen = AppNavScreen.CAMERA
+                        }
+                    )
+                }
+                AppNavScreen.MAP -> {
+                    MapViewerScreen(
+                        photos = mapPhotos,
+                        initialPhotoUri = selectedMapPhotoUri,
+                        settings = appSettings,
+                        galleryRepository = galleryRepository,
+                        onBack = {
+                            currentScreen = AppNavScreen.GALLERY
+                        },
+                        onOpenPhoto = { uri ->
+                            initialGalleryUri = uri
+                            currentScreen = AppNavScreen.GALLERY
                         }
                     )
                 }

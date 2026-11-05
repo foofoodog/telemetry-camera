@@ -104,9 +104,10 @@ The Telemetry Gallery allows you to review, inspect, export, and convert photos 
 * **Fullscreen Immersion**: Tap the center of the image to hide all chrome and toolbar buttons.
 
 ### Tools & GIS Export Menu
+* **Interactive Survey Map**: Launches the built-in OpenStreetMap (OSM) viewer. Plots all captured survey photos with polyline connecting tracks and directional camera heading pins. Supports multi-layer map tile switching (Standard OSM, OpenTopoMap terrain contours, and USGS Satellite), metric/imperial scale bar, magnetic north compass, and importing external GPX, KML, and KMZ flood survey paths.
 * **Field User Guide**: Instant access to the offline field manual and phototheodolite workflows from within the gallery.
 * **Glossary & Help**: Searchable glossary of all sensor mathematics, HUD toggles, and direct setting deep links.
-* **Open in Map App**: One-tap launch to plot the photo's exact coordinates in Google Maps, OsmAnd, or any installed mapping app.
+* **Open in Map App**: One-tap launch to plot the photo's exact coordinates in Google Maps, OsmAnd, or any installed external mapping app.
 * **Export Sidecar JSON**: Exports `<photo_name>.json` to `Pictures/TelemetryCamera/` with all raw telemetry metrics for programmatic analysis.
 * **Export Google Earth KMZ**: Packages all survey captures into a standalone `.kmz` archive bundling full-resolution photos, 3D `<Camera>` virtual viewpoints, and interactive HTML popups that open directly in Google Earth.
 * **Export Survey KML**: Generates lightweight Google Earth `.kml` placemark files with 6-DoF camera orientations.

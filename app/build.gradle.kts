@@ -15,8 +15,8 @@ android {
         applicationId = "com.codewarren.telemetry.camera"
         minSdk = 26
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.0.0"
+        versionCode = 4
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -100,6 +100,9 @@ dependencies {
 
     // Coil for Compose image loading
     implementation(libs.coil.compose)
+
+    // OpenStreetMap (OSMDroid)
+    implementation(libs.osmdroid.android)
 
     // Compose Tooling Preview support (debug only)
     debugImplementation(libs.androidx.ui.tooling)
